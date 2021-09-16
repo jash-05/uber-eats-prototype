@@ -1,0 +1,27 @@
+{
+  "name": "uber-eats-prototype",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jash-05/uber-eats-prototype.git"
+  },
+  "author": "Jash Sheth",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jash-05/uber-eats-prototype/issues"
+  },
+  "homepage": "https://github.com/jash-05/uber-eats-prototype#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cookie-parser": "^1.4.3",
+    "ejs": "^3.1.6",
+    "express": "^4.17.1",
+    "mysql": "^2.18.1",
+    "nodemon": "^2.0.12"
+  }
+}

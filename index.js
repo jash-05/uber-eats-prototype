@@ -3,12 +3,20 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
-// parse requests of content-type: application/json
-app.use(bodyParser.json());
+var session = require('express-session');
+var cookieParser = require('cookie-parser');
+const { Session } = require('express-session');
 
-//parse requests of content-type: applicaiton/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({
-    extended: true
+app.set('view engine', 'ejs');
+app.set('views','./views')
+app.use(express.static(__dirname + '/public'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(session({
+    secret: 'cmpe_273_secure_string',
+    resave: false,
+    saveUnitialized: true
 }));
 
 app.get('/', (req, res) => {
@@ -16,6 +24,11 @@ app.get('/', (req, res) => {
         message: 'Welcome to my uber eats application!'
     });
 })
+
+app.get('/login',(req, res) => {
+    
+    res.render('login');
+});
 
 app.listen(3000, () => {
     console.log('Server is running on port 3000');

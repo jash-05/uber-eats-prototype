@@ -24,29 +24,28 @@ CREATE TABLE restaurants (
     email_id VARCHAR(50),
     pass VARCHAR(50),
     phone_number VARCHAR(20),
-    location_ID INT,
-    address_ID INT,
-    about VARCHAR(200),
-    pictures VARCHAR(500),
-    timing_ID INT,
+    about VARCHAR(1000),
+    pictures VARCHAR(500) DEFAULT "",
+    opening_time VARCHAR(20) DEFAULT "",
+    closing_time VARCHAR(20) DEFAULT "",
     food_types VARCHAR(100)
 );
 
-CREATE TABLE locations (
-    location_ID INT PRIMARY KEY AUTO_INCREMENT,
-    location_name VARCHAR(50),
-    state_name VARCHAR(50)
-);
+-- CREATE TABLE locations (
+--     location_ID INT PRIMARY KEY AUTO_INCREMENT,
+--     location_name VARCHAR(50),
+--     state_name VARCHAR(50)
+-- );
 
 CREATE TABLE addresses (
     address_ID INT PRIMARY KEY AUTO_INCREMENT,
-    customer_ID INT,
+    linked_ID INT,
     line1 VARCHAR(100),
     line2 VARCHAR (100) DEFAULT "",
     city VARCHAR(50),
     state_name VARCHAR(50),
     zipcode INT,
-    title VARCHAR(100)
+    address_type VARCHAR(100)
 );
 
 CREATE TABLE orders (

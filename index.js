@@ -16,7 +16,7 @@ app.use(cookieParser());
 app.use(session({
     secret: 'cmpe_273_secure_string',
     resave: false,
-    saveUnitialized: true
+    saveUninitialized: true
 }));
 
 app.get('/', (req, res) => {
@@ -26,9 +26,10 @@ app.get('/', (req, res) => {
 })
 
 app.get('/login',(req, res) => {
-    
     res.render('login');
 });
+
+require("./routes/customer.routes.js")(app);
 
 app.listen(3000, () => {
     console.log('Server is running on port 3000');

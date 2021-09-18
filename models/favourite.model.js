@@ -1,52 +1,50 @@
 const conn = require("./db.js");
 
-// constructor
+// Favourites model constructor
 const Favourite = function (favourite) {
     this.customer_ID = favourite.customer_ID,
     this.restaurant_ID = favourite.restaurant_ID
 }
 
-Favourite.create = (newFavourite, result) => {
+// Create function
+Favourite.createFavouriteForCustomer = (newFavourite, result) => {
   conn.query("INSERT INTO favourites SET ?", newFavourite, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+      console.log(`Error while creating new favourites entry: ${err}`);
       result(err, null);
       return;
     }
-
-    console.log("created favourite: ", { favourite_id: res.insertId, ...newFavourite });
+    console.log("Created new entry into favourites table: ", { favourite_id: res.insertId, ...newFavourite });
     result(null, { favourite_id: res.insertId, ...newFavourite });
   });
 };
 
-Favourite.getAll = (customer_ID, result) => {
+// Read function
+Favourite.getFavouritesForCustomer = (customer_ID, result) => {
   conn.query(`SELECT * FROM favourites WHERE customer_ID = ${customer_ID}`, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+      console.log(`Error while trying to fetch favourites for customer_ID ${customer_ID}: ${err}`);
       result(null, err);
       return;
     }
-
-    console.log("favourites: ", res);
+    console.log(`Fetches favourites for customer ${customer_ID}: ${res}`);
     result(null, res);
   });
 };
 
-Favourite.remove = (customer_ID, restaurant_ID, result) => {
+// Delete function
+Favourite.removeRestaurantFromFavourites = (customer_ID, restaurant_ID, result) => {
     conn.query(`DELETE FROM favourites WHERE customer_ID = ${customer_ID} AND restaurant_ID = ${restaurant_ID}`, (err, res) => {
       if (err) {
-        console.log("error: ", err);
+        console.log(`Error while trying to delete restaurant ${restaurant_ID} for customer ${customer_ID}: ${err}`);
         result(null, err);
         return;
       }
-  
       if (res.affectedRows == 0) {
-        // not found  with the id
-        result({ kind: "not_found" }, null);
+        result({ err_type: "not_found" }, null);
         return;
       }
-
-      console.log(`Deleted favourite with customer_ID: ${customer_ID} and restaurant_ID ${restaurant_ID}`);
+      console.log(`Deleted favourite restaurant ${restaurant_ID} for customer ${customer_ID}`);
       result(null, res);
     });
 };

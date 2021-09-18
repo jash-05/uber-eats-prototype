@@ -8,18 +8,18 @@ exports.create = (req, res) => {
         message: "Content can not be empty!"
       });
     }
-    
+
+    // Create object of input variables
     let favourite_dict = {
         'customer_ID': req.body.customer_ID,
         'restaurant_ID': req.body.restaurant_ID
     };
 
     // Save Favourite in the database
-    Favourite.create(favourite_dict, (err, data) => {  
+    Favourite.createFavouriteForCustomer(favourite_dict, (err, data) => {  
       if (err)
         res.status(500).send({
-          message:
-            err.message || "Some error occurred while creating the Favourite."
+            message: err.message || "Some error occurred while creating the Favourite."
         });
       else res.send(data);
     });
@@ -27,29 +27,29 @@ exports.create = (req, res) => {
 
 // Retrieve all Favourites from the database.
 exports.findAll = (req, res) => {
-    Favourite.getAll(req.params.customer_ID, (err, data) => {
+    Favourite.getFavouritesForCustomer(req.params.customer_ID, (err, data) => {
       if (err)
         res.status(500).send({
-          message:
-            err.message || "Some error occurred while retrieving favourites."
+          message: err.message || "Some error occurred while retrieving favourites."
         });
       else res.send(data);
     });
   };
 
-// Delete a Favourite with the specified customerID and restaurantID in the request
+// Delete a Favourite with the specified customer_ID and restaurant_ID in the request
 exports.delete = (req, res) => {
-    Favourite.remove(req.params.customer_ID, req.params.restaurant_ID,(err, data) => {
+    Favourite.removeRestaurantFromFavourites(req.params.customer_ID, req.params.restaurant_ID,(err, data) => {
       if (err) {
-        if (err.kind === "not_found") {
+        if (err.err_type === "not_found") {
           res.status(404).send({
-            message: `Not found Favourite with id ${req.params.customer_ID}.`
+            message: `Could not find restaurant ${req.params.restaurant_ID} in favourites of customer ${req.params.customer_ID}.`
           });
         } else {
           res.status(500).send({
-            message: "Could not delete Favourite with id " + req.params.customer_ID
+            message: `Could not delete restaurant ${req.params.restaurant_ID} from favourites of customer ${req.params.customer_ID}.`
           });
         }
-      } else res.send({ message: `Favourite was deleted successfully!` });
+      } else res.send({ 
+          message: `Favourite restaurant ${req.params.restaurant_ID} was deleted successfully for customer ${req.params.customer_ID}!` });
     });
   };

@@ -33,6 +33,7 @@ require("./routes/customer.routes.js")(app);
 require("./routes/restaurant.routes.js")(app);
 require("./routes/favourite.routes.js")(app);
 require("./routes/customer_address.routes.js")(app);
+require("./routes/restaurant_address.routes.js")(app);
 
 app.listen(3000, () => {
     console.log('Server is running on port 3000');

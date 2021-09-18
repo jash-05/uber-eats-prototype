@@ -19,8 +19,8 @@ Customer.create = (newCustomer, result) => {
       return;
     }
 
-    console.log("created customer: ", { id: res.insertId, ...newCustomer });
-    result(null, { id: res.insertId, ...newCustomer });
+    console.log("created customer: ", { customer_id: res.insertId, ...newCustomer });
+    result(null, { customer_id: res.insertId, ...newCustomer });
   });
 };
 

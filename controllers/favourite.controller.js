@@ -1,6 +1,6 @@
 const Favourite = require("../models/favourite.model.js");
 
-// Create and Save a new Customer
+// Create and Save a new Favourite
 exports.create = (req, res) => {
     // Validate request
     if (!req.body) {

@@ -19,7 +19,7 @@ Favourite.createFavouriteForCustomer = (newFavourite, result) => {
   });
 };
 
-// Read function
+// Read function (with condition)
 Favourite.getFavouritesForCustomer = (customer_ID, result) => {
   conn.query(`SELECT * FROM favourites WHERE customer_ID = ${customer_ID}`, (err, res) => {
     if (err) {
@@ -32,7 +32,7 @@ Favourite.getFavouritesForCustomer = (customer_ID, result) => {
   });
 };
 
-// Delete function
+// Delete function (single row)
 Favourite.removeRestaurantFromFavourites = (customer_ID, restaurant_ID, result) => {
     conn.query(`DELETE FROM favourites WHERE customer_ID = ${customer_ID} AND restaurant_ID = ${restaurant_ID}`, (err, res) => {
       if (err) {

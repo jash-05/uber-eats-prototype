@@ -40,6 +40,25 @@ Restaurant.getAll = result => {
     });
 };
 
+Restaurant.findById = (restaurant_id, result) => {
+    conn.query(`SELECT * FROM restaurants WHERE restaurant_ID = ${restaurant_id}`, (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(err, null);
+        return;
+      }
+  
+      if (res.length) {
+        console.log("found restaurant: ", res[0]);
+        result(null, res[0]);
+        return;
+      }
+  
+      // not found restaurant with the id
+      result({ kind: "not_found" }, null);
+    });
+  };
+
 Restaurant.updateById = (id, restaurant, result) => {
     conn.query(
       "UPDATE restarants SET email = ?, name = ?, active = ? WHERE id = ?",

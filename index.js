@@ -31,6 +31,7 @@ app.get('/login',(req, res) => {
 
 require("./routes/customer.routes.js")(app);
 require("./routes/restaurant.routes.js")(app);
+require("./routes/favourite.routes.js")(app);
 
 app.listen(3000, () => {
     console.log('Server is running on port 3000');

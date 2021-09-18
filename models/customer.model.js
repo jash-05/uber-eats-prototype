@@ -25,7 +25,7 @@ Customer.create = (newCustomer, result) => {
 };
 
 Customer.findById = (customerId, result) => {
-  conn.query(`SELECT * FROM customers WHERE customer_id = ${customerId}`, (err, res) => {
+  conn.query(`SELECT * FROM customers WHERE customer_ID = ${customerId}`, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);

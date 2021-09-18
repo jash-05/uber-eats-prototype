@@ -37,15 +37,25 @@ CREATE TABLE restaurants (
 --     state_name VARCHAR(50)
 -- );
 
-CREATE TABLE addresses (
+CREATE TABLE customer_addresses (
     address_ID INT PRIMARY KEY AUTO_INCREMENT,
-    linked_ID INT,
+    customer_ID INT,
     line1 VARCHAR(100),
     line2 VARCHAR (100) DEFAULT "",
     city VARCHAR(50),
     state_name VARCHAR(50),
     zipcode INT,
     address_type VARCHAR(100)
+);
+
+CREATE TABLE restaurant_addresses (
+    address_ID INT PRIMARY KEY AUTO_INCREMENT,
+    restaurant_ID INT,
+    line1 VARCHAR(100),
+    line2 VARCHAR (100) DEFAULT "",
+    city VARCHAR(50),
+    state_name VARCHAR(50),
+    zipcode INT
 );
 
 CREATE TABLE orders (

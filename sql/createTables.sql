@@ -29,6 +29,7 @@ CREATE TABLE restaurants (
     opening_time VARCHAR(20) DEFAULT "",
     closing_time VARCHAR(20) DEFAULT "",
     food_types VARCHAR(100)
+    -- restaurant_type VARCHAR(50) (DELIVERY/PICKUP)
 );
 
 -- CREATE TABLE locations (

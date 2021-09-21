@@ -8,17 +8,6 @@ exports.create = (req, res) => {
         message: "Content can not be empty!"
       });
     }
-  
-    // Create a Customer
-    // const customer = new Customer({
-    //     first_name: req.body.first_name,
-    //     last_name: req.body.last_name,
-    //     email_id: req.body.email_id,
-    //     pass: req.body.pass,
-    //     phone_number: req.body.phone_number,
-    //     dob: req.body.dob,
-    //     city: req.body.city
-    // });
 
     let customer_dict = {
         first_name: req.body.first_name,

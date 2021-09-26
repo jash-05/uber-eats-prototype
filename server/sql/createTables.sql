@@ -8,6 +8,7 @@ CREATE TABLE customers (
     last_name VARCHAR(30),
     email_id VARCHAR(50),
     pass VARCHAR(50),
+    country VARCHAR(50),
     phone_number VARCHAR(20),
     about VARCHAR(200) DEFAULT "",
     profile_picture VARCHAR(100) DEFAULT "",

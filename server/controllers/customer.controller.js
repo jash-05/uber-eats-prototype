@@ -14,9 +14,8 @@ exports.create = (req, res) => {
         last_name: req.body.last_name,
         email_id: req.body.email_id,
         pass: req.body.pass,
+        country: req.body.country,
         phone_number: req.body.phone_number,
-        dob: req.body.dob,
-        city: req.body.city        
     };
 
     console.log(customer_dict);
@@ -28,7 +27,11 @@ exports.create = (req, res) => {
           message:
             err.message || "Some error occurred while creating the Customer."
         });
-      else res.send(data);
+      else {
+        res.cookie('cookie',req.body.email_id,{maxAge: 900000, httpOnly: false, path : '/'});
+        req.session.user = "Logged in";
+        res.send(data)
+      };
     });
   };
 

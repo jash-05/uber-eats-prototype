@@ -1,23 +1,55 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require("cors");
+// const { Session } = require('express-session');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
 
 const app = express();
-
-var session = require('express-session');
-var cookieParser = require('cookie-parser');
-const { Session } = require('express-session');
 
 app.set('view engine', 'ejs');
 app.set('views','./views')
 app.use(express.static(__dirname + '/public'));
+
+// app.use(cookieParser());
+// app.use(session({
+//     secret: 'cmpe_273_secure_string',
+//     resave: false,
+//     saveUninitialized: true
+// }));
+app.use(express.json());
+
+app.use(cors({
+    origin: ["http://localhost:3000"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
+}));
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
+
 app.use(session({
-    secret: 'cmpe_273_secure_string',
+    // key: "userId",
+    secret: "cmpe_273_secret",
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: false,
+    duration: 60 * 60 * 1000,
+    activeDuration: 5 * 60 * 1000
+    // cookie: {
+    //     expires: 60 * 60 * 24 * 1000
+    // }
 }));
+
+//Allow Access Control
+app.use(function(req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT,DELETE');
+    res.setHeader('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers');
+    res.setHeader('Cache-Control', 'no-cache');
+    next();
+  });
+
 
 app.get('/', (req, res) => {
     res.json({
@@ -26,8 +58,20 @@ app.get('/', (req, res) => {
 })
 
 app.get('/login',(req, res) => {
-    res.render('login');
+    if (req.session.user){
+        res.send({loggedIn: true, user: req.session.user})
+    } else {
+        res.send({loggedIn: false})
+    }
 });
+
+
+app.post('/register', (req, res) => {
+    console.log(req.body)
+    // req.session.user = req.body.email;
+    // console.log(req.session.user);
+    res.send('registered successfully');
+})
 
 require("./routes/customer.routes.js")(app);
 require("./routes/restaurant.routes.js")(app);

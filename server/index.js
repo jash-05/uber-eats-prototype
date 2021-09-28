@@ -57,6 +57,27 @@ app.get('/', (req, res) => {
     });
 })
 
+app.post('/login', function(req, res){
+    console.log('Inside POST login route');
+    console.log(req.body)
+    // req.body.email_id = req.body.username;
+    if (req.body.email_id === 'jash@sjsu') {
+        console.log(`${req.body.email_id} === jash@sjsu`);
+        res.cookie('cookie',"uber-eats-admin",{maxAge: 900000, httpOnly: false, path : '/'});
+        req.session.user = req.body.email_id;
+        res.writeHead(200, {
+            'Content-Type': 'text/plain'
+        })
+        res.end("Successful login");        
+    } else {
+        res.writeHead(200, {
+            'Content-Type': 'text/plain'
+        })
+        res.end("Unsuccessful login");
+    }
+});
+
+
 app.get('/login',(req, res) => {
     if (req.session.user){
         res.send({loggedIn: true, user: req.session.user})

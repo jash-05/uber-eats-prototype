@@ -12,9 +12,9 @@ class Main extends Component {
         return(
             <div>
                 {/*Render Different Component based on Route*/}
-                <Route path="/" component={CustomerRegister}/>
-                <Route path="customerLogin" component={CustomerLogin}/>
-                <Route path="customerRegister" component={CustomerRegister}/>
+                {/* <Route path="/" component={CustomerRegister}/> */}
+                <Route path="/customerLogin" component={CustomerLogin}/>
+                <Route path="/customerRegister" component={CustomerRegister}/>
                 <Route path="/restaurantLogin" component={RestaurantLogin}/>
                 <Route path="/restaurantRegister" component={RestaurantRegister}/>
             </div>

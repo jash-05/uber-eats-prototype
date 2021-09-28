@@ -4,22 +4,29 @@ import axios from 'axios';
 import cookie from 'react-cookies';
 import {Redirect} from 'react-router';
 import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import Container from 'react-bootstrap/Container';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import Image from 'react-bootstrap/Image';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 
 // Define a Login Component
-class Login extends Component{
+class CustomerLogin extends Component{
     //call the constructor method
     constructor(props){
         //Call the constructor of Super class i.e The Component
         super(props);
         //maintain the state required for this component
         this.state = {
-            email_ID : "",
-            password : "",
-            authFlag : false,
+            email: "",
+            password: "",
+            authFlag: false,
             loginStatus: ""
         }
-        //Bind the handlers to this class
-        this.usernameChangeHandler = this.usernameChangeHandler.bind(this);
+        // //Bind the handlers to this class
+        this.emailChangeHandler = this.emailChangeHandler.bind(this);
         this.passwordChangeHandler = this.passwordChangeHandler.bind(this);
         this.submitLogin = this.submitLogin.bind(this);
     }
@@ -28,27 +35,28 @@ class Login extends Component{
         this.setState({
             authFlag : false
         })
+        console.log('Cookie status: ', cookie.load('cookie'));
     }
-    //username change handler to update state variable with the text entered by the user
-    usernameChangeHandler = (e) => {
+    emailChangeHandler = (e) => {
         this.setState({
-            username : e.target.value
+            email: e.target.value
         })
     }
-    //password change handler to update state variable with the text entered by the user
     passwordChangeHandler = (e) => {
         this.setState({
-            password : e.target.value
+            password: e.target.value
         })
     }
+
     //submit Login handler to send a request to the node backend
     submitLogin = (e) => {
+        console.log(`Email: ${this.state.email}, Password: ${this.state.password}`)
         var headers = new Headers();
         //prevent page from refresh
         e.preventDefault();
         const data = {
-            username : this.state.username,
-            password : this.state.password
+            email_id: this.state.email,
+            pass: this.state.password
         }
         //set the with credentials to true
         axios.defaults.withCredentials = true;
@@ -57,38 +65,44 @@ class Login extends Component{
             .then(response => {
                 console.log("Status Code : ",response.status);
                 if(response.status === 200){
-                    this.setState({
-                        authFlag : true
-                    });
-                    this.setState({
-                        loginStatus: response.data
-                    });
+                    console.log("Successful request");
+                    console.log(response);
+                    console.log('Cookie status: ', cookie.load('cookie'));
                 } else{
-                    this.setState({
-                        authFlag : false
-                    })
+                    console.log("Unsuccessful request");
+                    console.log(response);
                 }
             });
     }
     render(){
-        //redirect based on successful login
-        // let redirectVar = null;
-        // let invalidLoginMessage = "";
-        // if (this.state.loginStatus === "Unsuccessful Login") {
-        //     invalidLoginMessage = "Username and passwords dont match";
-        // };
-        // console.log(this.state.authFlag)
-        // if(cookie.load('cookie')){
-        //     redirectVar = <Redirect to= "/home"/>
-        // } else {
-        //     redirectVar = <Redirect to="/login"/>
-        // }
         return(
-            <>
-            <Button variant="primary">Primary</Button>{' '}
-            </>
+            <div>
+                <Container className="mx-auto p-5">
+                    <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Uber_Eats_2020_logo.svg/1280px-Uber_Eats_2020_logo.svg.png" fluid/>                    
+                </Container>
+                <Container className="mt-5">
+                    <Form>
+                        
+                        <Form.Group className="mb-3" controlId="formBasicEmail">
+                            <Form.Label>Email address</Form.Label>
+                            <Form.Control onChange={this.emailChangeHandler} type="email" placeholder="Enter email" />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" controlId="formBasicPassword">
+                            <Form.Label>Password</Form.Label>
+                            <Form.Control onChange={this.passwordChangeHandler} type="password" placeholder="Password" />
+                        </Form.Group>
+
+                        <div className="d-grid gap-2">
+                            <Button onClick={this.submitLogin} variant="primary" type="submit">
+                                Login to your account
+                            </Button>
+                        </div>
+                    </Form>
+                </Container>
+            </div>
         )
     }
 }
 //export Login Component
-export default Login;
+export default CustomerLogin;

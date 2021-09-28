@@ -13,7 +13,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 // Define a Login Component
-class Login extends Component{
+class CustomerRegister extends Component{
     //call the constructor method
     constructor(props){
         //Call the constructor of Super class i.e The Component
@@ -156,4 +156,4 @@ class Login extends Component{
     }
 }
 //export Login Component
-export default Login;
+export default CustomerRegister;

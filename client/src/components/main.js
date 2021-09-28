@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Route} from 'react-router-dom';
+import WelcomeUser from './welcome.user'
 import CustomerLogin from './customer.login';
 import CustomerRegister from './customer.register';
 import RestaurantLogin from './restaurant.login';
@@ -13,6 +14,7 @@ class Main extends Component {
             <div>
                 {/*Render Different Component based on Route*/}
                 {/* <Route path="/" component={CustomerRegister}/> */}
+                <Route path="/welcomeUser" component={WelcomeUser}/>
                 <Route path="/customerLogin" component={CustomerLogin}/>
                 <Route path="/customerRegister" component={CustomerRegister}/>
                 <Route path="/restaurantLogin" component={RestaurantLogin}/>

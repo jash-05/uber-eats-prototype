@@ -29,8 +29,10 @@ CREATE TABLE restaurants (
     pictures VARCHAR(500) DEFAULT "",
     opening_time VARCHAR(20) DEFAULT "",
     closing_time VARCHAR(20) DEFAULT "",
-    food_types VARCHAR(100)
-    -- restaurant_type VARCHAR(50) (DELIVERY/PICKUP)
+    vegan BOOLEAN,
+    vegetarian BOOLEAN,
+    non_vegetarian BOOLEAN,
+    restaurant_type VARCHAR(50) DEFAULT "DELIVERY"
 );
 
 -- CREATE TABLE locations (

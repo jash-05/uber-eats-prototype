@@ -26,14 +26,15 @@ CREATE TABLE restaurants (
     pass VARCHAR(50),
     country VARCHAR(50),
     phone_number VARCHAR(20),
-    about VARCHAR(1000),
-    pictures VARCHAR(500) DEFAULT "",
-    opening_time VARCHAR(20) DEFAULT "",
-    closing_time VARCHAR(20) DEFAULT "",
-    vegan BOOLEAN,
     vegetarian BOOLEAN,
     non_vegetarian BOOLEAN,
-    restaurant_type VARCHAR(50) DEFAULT "DELIVERY"
+    vegan BOOLEAN,
+    delivery BOOLEAN,
+    pickup BOOLEAN,
+    cover_image VARCHAR(500),
+    about VARCHAR(1000),
+    opening_time VARCHAR(20),
+    closing_time VARCHAR(20)
 );
 
 -- CREATE TABLE locations (

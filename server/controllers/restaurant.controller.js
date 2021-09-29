@@ -14,8 +14,13 @@ exports.create = (req, res) => {
         pass: req.body.pass,
         country: req.body.country,
         phone_number: req.body.phone_number,
+        vegetarian: req.body.vegetarian,
+        non_vegetarian: req.body.non_vegetarian,
+        vegan: req.body.vegan,
+        delivery: req.body.delivery,
+        pickup: req.body.pickup,
+        cover_image: req.body.cover_image,
         about: req.body.about,
-        pictures: req.body.pictures,
         opening_time: req.body.opening_time,
         closing_time: req.body.closing_time
     }

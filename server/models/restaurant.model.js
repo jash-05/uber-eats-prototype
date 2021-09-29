@@ -7,11 +7,15 @@ const Restaurant = function (restaurant) {
     this.email_id = restaurant.email_id,
     this.pass = restaurant.pass,
     this.phone_number = restaurant.phone_number,
+    this.vegetarian = restaurant.vegetarian,
+    this.non_vegetarian = restaurant.non_vegetarian,
+    this.vegan = restaurant.vegan,
+    this.delivery = restaurant.delivery,
+    this.pickup = restaurant.pickup,
+    this.cover_image = restaurant.cover_image,
     this.about = restaurant.about,
-    this.pictures = restaurant.pictures,
     this.opening_time = restaurant.opening_time,
-    this.closing_time = restaurant.closing_time,
-    this.food_types = restaurant.food_types
+    this.closing_time = restaurant.closing_time
 }
 
 Restaurant.create = (newRestaurant, result) => {

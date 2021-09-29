@@ -3,24 +3,28 @@ import './../App.css';
 import axios from 'axios';
 import cookie from 'react-cookies';
 import {Redirect} from 'react-router';
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import Container from 'react-bootstrap/Container';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import Image from 'react-bootstrap/Image';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Card from 'react-bootstrap/Card';
+import Badge from 'react-bootstrap/Badge';
 
 // Define a Login Component
-class Login extends Component{
+class Dashboard extends Component{
     //call the constructor method
     constructor(props){
         //Call the constructor of Super class i.e The Component
         super(props);
         //maintain the state required for this component
         this.state = {
-            email_ID : "",
-            password : "",
             authFlag : false,
-            loginStatus: ""
         }
         //Bind the handlers to this class
-        this.usernameChangeHandler = this.usernameChangeHandler.bind(this);
-        this.passwordChangeHandler = this.passwordChangeHandler.bind(this);
-        this.submitLogin = this.submitLogin.bind(this);
     }
     //Call the Will Mount to set the auth Flag to false
     componentWillMount(){
@@ -40,74 +44,69 @@ class Login extends Component{
             password : e.target.value
         })
     }
-    //submit Login handler to send a request to the node backend
-    submitLogin = (e) => {
-        var headers = new Headers();
-        //prevent page from refresh
-        e.preventDefault();
-        const data = {
-            username : this.state.username,
-            password : this.state.password
+    render(){        
+        let restaurantData = [
+            {
+                'restaurant_name': 'Five Guys',
+                'restaurant_address': '1085 E Brokaw Road, San Jose, CA 95131',
+                'restaurant_image': 'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly9kdXl0NGg5bmZuajUwLmNsb3VkZnJvbnQubmV0L3Jlc2l6ZWQvYnVsa19hY3Rpb25zX2ltYWdlXzBkMGUwYTE1LTljZTctNGI4Ny1hYmQyLWMyZDA0NTNlYzRiYS13NTUwLTk0LmpwZw=='
+            },
+            {
+                'restaurant_name': 'Five Guys',
+                'restaurant_address': '1085 E Brokaw Road, San Jose, CA 95131',
+                'restaurant_image': 'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly9kdXl0NGg5bmZuajUwLmNsb3VkZnJvbnQubmV0L3Jlc2l6ZWQvYnVsa19hY3Rpb25zX2ltYWdlXzBkMGUwYTE1LTljZTctNGI4Ny1hYmQyLWMyZDA0NTNlYzRiYS13NTUwLTk0LmpwZw=='
+            },
+            {
+                'restaurant_name': 'Five Guys',
+                'restaurant_address': '1085 E Brokaw Road, San Jose, CA 95131',
+                'restaurant_image': 'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly9kdXl0NGg5bmZuajUwLmNsb3VkZnJvbnQubmV0L3Jlc2l6ZWQvYnVsa19hY3Rpb25zX2ltYWdlXzBkMGUwYTE1LTljZTctNGI4Ny1hYmQyLWMyZDA0NTNlYzRiYS13NTUwLTk0LmpwZw=='
+            },
+            {
+                'restaurant_name': 'Five Guys',
+                'restaurant_address': '1085 E Brokaw Road, San Jose, CA 95131',
+                'restaurant_image': 'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly9kdXl0NGg5bmZuajUwLmNsb3VkZnJvbnQubmV0L3Jlc2l6ZWQvYnVsa19hY3Rpb25zX2ltYWdlXzBkMGUwYTE1LTljZTctNGI4Ny1hYmQyLWMyZDA0NTNlYzRiYS13NTUwLTk0LmpwZw=='
+            },
+            {
+                'restaurant_name': 'Five Guys',
+                'restaurant_address': '1085 E Brokaw Road, San Jose, CA 95131',
+                'restaurant_image': 'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly9kdXl0NGg5bmZuajUwLmNsb3VkZnJvbnQubmV0L3Jlc2l6ZWQvYnVsa19hY3Rpb25zX2ltYWdlXzBkMGUwYTE1LTljZTctNGI4Ny1hYmQyLWMyZDA0NTNlYzRiYS13NTUwLTk0LmpwZw=='
+            }
+        ]
+
+        const createCard = card => {
+            return (
+                <Col sm={3} className="ml-3 mt-3"  style={{ width: '15rem' }}>
+                <Card>
+                    <Card.Img variant="top" src={card.restaurant_image} />
+                    <Card.Body>
+                        <Card.Title>{card.restaurant_name}</Card.Title>
+                        <Card.Text>
+                              {card.restaurant_address}
+                        </Card.Text>
+                    </Card.Body>
+                    </Card>
+                  </Col>
+            )
         }
-        //set the with credentials to true
-        axios.defaults.withCredentials = true;
-        //make a post request with the user data
-        axios.post('http://localhost:3001/login',data)
-            .then(response => {
-                console.log("Status Code : ",response.status);
-                if(response.status === 200){
-                    this.setState({
-                        authFlag : true
-                    });
-                    this.setState({
-                        loginStatus: response.data
-                    });
-                } else{
-                    this.setState({
-                        authFlag : false
-                    })
-                }
-            });
-    }
-    render(){
-        //redirect based on successful login
-        let redirectVar = null;
-        let invalidLoginMessage = "";
-        if (this.state.loginStatus === "Unsuccessful Login") {
-            invalidLoginMessage = "Username and passwords dont match";
-        };
-        console.log(this.state.authFlag)
-        if(cookie.load('cookie')){
-            redirectVar = <Redirect to= "/home"/>
-        } else {
-            redirectVar = <Redirect to="/customerLogin"/>
-        }
+        
         return(
-            <div>
-                {redirectVar}
-            <div class="container">
-                
-                <div class="login-form">
-                    <div class="main-div">
-                        <div class="panel">
-                            <h2>Admin Login</h2>
-                            <p>Please enter your username and password</p>
-                            <p> {invalidLoginMessage} </p>
-                        </div>
-                        
-                            <div class="form-group">
-                                <input onChange = {this.usernameChangeHandler} type="text" class="form-control" name="username" placeholder="Username"/>
-                            </div>
-                            <div class="form-group">
-                                <input onChange = {this.passwordChangeHandler} type="password" class="form-control" name="password" placeholder="Password"/>
-                            </div>
-                            <button onClick = {this.submitLogin} class="btn btn-primary">Login</button>                 
-                    </div>
-                </div>
-            </div>
-            </div>
+            <Container>
+                <Row>
+                    <Col xs={3}>1 of 2</Col>
+                    <Col xs={9}>
+                      <Container>
+                          <Row>
+                          {restaurantData.map(createCard)}
+                          </Row>
+                      </Container>
+                    </Col>
+                </Row>
+            </Container>
         )
     }
 }
+
+
+
 //export Login Component
-export default Login;
+export default Dashboard;

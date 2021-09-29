@@ -6,18 +6,18 @@ exports.create = (req, res) => {
             message: "Content can not be empty!"
         });
     }
-
+    console.log(req.body);
     let restaurant_dict = {
         restaurant_name: req.body.restaurant_name,
         owner_name: req.body.owner_name,
         email_id: req.body.email_id,
         pass: req.body.pass,
+        country: req.body.country,
         phone_number: req.body.phone_number,
         about: req.body.about,
         pictures: req.body.pictures,
         opening_time: req.body.opening_time,
-        closing_time: req.body.closing_time,
-        food_types: req.body.food_types
+        closing_time: req.body.closing_time
     }
 
     Restaurant.create(restaurant_dict, (err, data) => {

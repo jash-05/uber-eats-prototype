@@ -24,6 +24,7 @@ CREATE TABLE restaurants (
     owner_name VARCHAR(50),
     email_id VARCHAR(50),
     pass VARCHAR(50),
+    country VARCHAR(50),
     phone_number VARCHAR(20),
     about VARCHAR(1000),
     pictures VARCHAR(500) DEFAULT "",

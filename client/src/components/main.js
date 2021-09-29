@@ -6,6 +6,7 @@ import CustomerRegister from './customer.register';
 import RestaurantLogin from './restaurant.login';
 import RestaurantRegister from './restaurant.register';
 import Dashboard from './dashboard';
+import DashboardNavbar from './navbar'
 
 //Create a Main Component
 class Main extends Component {
@@ -13,16 +14,19 @@ class Main extends Component {
         return(
             <div>
                 {/*Render Different Component based on Route*/}
-                {/* <Route path="/" component={CustomerRegister}/> */}
+                <Route path="/" component={DashboardNavbar}/>
                 <Route path="/welcomeUser" component={WelcomeUser}/>
                 <Route path="/customerLogin" component={CustomerLogin}/>
                 <Route path="/customerRegister" component={CustomerRegister}/>
                 <Route path="/restaurantLogin" component={RestaurantLogin}/>
                 <Route path="/restaurantRegister" component={RestaurantRegister}/>
+                <Route path="/dashboard" component={Dashboard}/>
             </div>
         )
     }
 }
+
+
 
 //Export The Main Component
 export default Main;

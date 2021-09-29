@@ -20,16 +20,16 @@ class RestaurantRegister extends Component{
         super(props);
         //maintain the state required for this component
         this.state = {
-            first_name: "",
-            last_name: "",
+            restaurant_name: "",
+            owner_name: "",
             email: "",
-            password: "",
+            pass: "",
             country: "Select country",
             phone_number: ""
         }
         // //Bind the handlers to this class
-        this.firstNameChangeHandler = this.firstNameChangeHandler.bind(this);
-        this.lastNameChangeHandler = this.lastNameChangeHandler.bind(this);
+        this.restaurantNameChangeHandler = this.restaurantNameChangeHandler.bind(this);
+        this.ownerNameChangeHandler = this.ownerNameChangeHandler.bind(this);
         this.emailChangeHandler = this.emailChangeHandler.bind(this);
         this.passwordChangeHandler = this.passwordChangeHandler.bind(this);
         this.countryChangeHandler = this.countryChangeHandler.bind(this);
@@ -42,14 +42,14 @@ class RestaurantRegister extends Component{
             authFlag : false
         })
     }
-    firstNameChangeHandler = (e) => {
+    restaurantNameChangeHandler = (e) => {
         this.setState({
-            first_name: e.target.value
+            restaurant_name: e.target.value
         })
     }
-    lastNameChangeHandler = (e) => {
+    ownerNameChangeHandler = (e) => {
         this.setState({
-            last_name: e.target.value
+            owner_name: e.target.value
         })
     }
     emailChangeHandler = (e) => {
@@ -75,22 +75,23 @@ class RestaurantRegister extends Component{
 
     //submit Login handler to send a request to the node backend
     submitLogin = (e) => {
-        console.log(`First name: ${this.state.first_name}, Last name: ${this.state.last_name}, Email: ${this.state.email}, Password: ${this.state.password}, Country: ${this.state.country}, Phone number: ${this.state.phone_number}`)
+        console.log(`Restaurant name: ${this.state.restaurant_name}, Owner name: ${this.state.owner_name}, Email: ${this.state.email}, Password: ${this.state.password}, Country: ${this.state.country}, Phone number: ${this.state.phone_number}`);
         var headers = new Headers();
         //prevent page from refresh
         e.preventDefault();
         const data = {
-            first_name : this.state.first_name,
-            last_name: this.state.last_name,
+            restaurant_name : this.state.restaurant_name,
+            owner_name: this.state.owner_name,
             email_id: this.state.email,
             pass: this.state.password,
             country: this.state.country,
             phone_number: this.state.phone_number
         }
+        console.log(data)
         //set the with credentials to true
         axios.defaults.withCredentials = true;
         //make a post request with the user data
-        axios.post('http://localhost:3001/customers',data)
+        axios.post('http://localhost:3001/restaurants',data)
             .then(response => {
                 console.log("Status Code : ",response.status);
                 if(response.status === 200){
@@ -111,14 +112,14 @@ class RestaurantRegister extends Component{
                 </Container>
                 <Container className="mt-5">
                     <Form>
-                        <Form.Group className="mb-3" controlId="formBasicFirstName">
-                            <Form.Label>First name</Form.Label>
-                            <Form.Control onChange={this.firstNameChangeHandler} type="text" placeholder="Enter your first name" />
+                        <Form.Group className="mb-3" controlId="formBasicRestaurantName">
+                            <Form.Label>Restaurant name</Form.Label>
+                            <Form.Control onChange={this.restaurantNameChangeHandler} type="text" placeholder="Enter the name of your restaurant" />
                         </Form.Group>
 
-                        <Form.Group className="mb-3" controlId="formBasicLastName">
-                            <Form.Label>Last name</Form.Label>
-                            <Form.Control onChange={this.lastNameChangeHandler} type="text" placeholder="Enter your last name" />
+                        <Form.Group className="mb-3" controlId="formBasicOwnerName">
+                            <Form.Label>Owner name</Form.Label>
+                            <Form.Control onChange={this.ownerNameChangeHandler} type="text" placeholder="Enter your full name" />
                         </Form.Group>
                         
                         <Form.Group className="mb-3" controlId="formBasicEmail">
@@ -144,9 +145,10 @@ class RestaurantRegister extends Component{
                             <Form.Label>Phone Number</Form.Label>
                             <Form.Control onChange={this.phoneNumberChangeHandler} type="number" placeholder="Enter your 10-digit phone number" />
                         </Form.Group>
+
                         <div className="d-grid gap-2">
                             <Button onClick={this.submitLogin} variant="primary" type="submit">
-                                Create new account
+                                Add your restaurant
                             </Button>
                         </div>
                     </Form>

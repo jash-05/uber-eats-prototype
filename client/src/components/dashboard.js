@@ -14,6 +14,7 @@ import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import Badge from 'react-bootstrap/Badge';
 
+
 // Define a Login Component
 class Dashboard extends Component{
     //call the constructor method
@@ -22,7 +23,8 @@ class Dashboard extends Component{
         super(props);
         //maintain the state required for this component
         this.state = {
-            authFlag : false,
+            fetchedRestaurants: [],
+            authFlag : false
         }
         //Bind the handlers to this class
     }
@@ -31,6 +33,30 @@ class Dashboard extends Component{
         this.setState({
             authFlag : false
         })
+        let restaurantData = [] 
+        axios.get('http://localhost:3001/restaurants')
+            .then(response => {
+                console.log("Status Code : ",response.status);
+                if(response.status === 200){
+                    console.log("Successful request");
+                    console.log(response.data);
+                    for (let i=0;i < response.data.length; i++){
+                        restaurantData.push({
+                            'restaurant_ID': response.data[i].restaurant_ID,
+                            'restaurant_name': response.data[i].restaurant_name,
+                            'cover_image': response.data[i].cover_image
+                        });
+                        console.log(restaurantData)
+                    }
+                    this.setState({
+                        fetchedRestaurants: restaurantData
+                    })
+                    console.log('Cookie status: ', cookie.load('cookie'));
+                } else{
+                    console.log("Unsuccessful request");
+                    console.log(response);
+                }
+            });
     }
     //username change handler to update state variable with the text entered by the user
     usernameChangeHandler = (e) => {
@@ -44,8 +70,8 @@ class Dashboard extends Component{
             password : e.target.value
         })
     }
-    render(){        
-        let restaurantData = [
+    render(){       
+        let restaurantData2 = [
             {
                 'restaurant_name': 'Five Guys',
                 'restaurant_address': '1085 E Brokaw Road, San Jose, CA 95131',
@@ -72,23 +98,22 @@ class Dashboard extends Component{
                 'restaurant_image': 'https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly9kdXl0NGg5bmZuajUwLmNsb3VkZnJvbnQubmV0L3Jlc2l6ZWQvYnVsa19hY3Rpb25zX2ltYWdlXzBkMGUwYTE1LTljZTctNGI4Ny1hYmQyLWMyZDA0NTNlYzRiYS13NTUwLTk0LmpwZw=='
             }
         ]
-
         const createCard = card => {
             return (
                 <Col sm={3} className="ml-3 mt-3"  style={{ width: '15rem' }}>
                 <Card>
-                    <Card.Img variant="top" src={card.restaurant_image} />
+                    <Card.Img variant="top" src={card.cover_image} />
                     <Card.Body>
                         <Card.Title>{card.restaurant_name}</Card.Title>
                         <Card.Text>
-                              {card.restaurant_address}
+                            
+                              {/* {card.restaurant_address} */}
                         </Card.Text>
                     </Card.Body>
                     </Card>
                   </Col>
             )
         }
-        
         return(
             <Container>
                 <Row>
@@ -96,7 +121,7 @@ class Dashboard extends Component{
                     <Col xs={9}>
                       <Container>
                           <Row>
-                          {restaurantData.map(createCard)}
+                          {this.state.fetchedRestaurants.map(createCard)}
                           </Row>
                       </Container>
                     </Col>

@@ -36,7 +36,27 @@ exports.create = (req, res) => {
 };
 
 exports.findAll = (req, res) => {
-    Restaurant.getAll((err, data) => {
+    console.log(req.query);
+    let all_food_options = ["vegetarian", "non_vegetarian", "vegan"];
+    let all_delivery_options = ["delivery", "pickup"];
+    let selected_food_options = [];
+    let selected_delivery_option = "";
+    for (let key in req.query){
+        if (all_food_options.includes(key) && req.query[key]=="true") {
+            selected_food_options.push(`${key}=1`);
+        } else if (all_delivery_options.includes(key) && req.query[key]=="true") {
+            selected_delivery_option = key;
+        }
+    }
+    let delivery_option_string = `${selected_food_options.join(" OR ")}`;
+    let query_string = "SELECT * FROM restaurants WHERE";
+    if (delivery_option_string){
+        query_string = `${query_string} (${delivery_option_string}) AND (${selected_delivery_option}=1);`;
+    } else {
+        query_string = `${query_string} ${selected_delivery_option}=1;`;
+    }
+    console.log(query_string);
+    Restaurant.getAll(query_string, (err, data) => {
         if (err)
             res.status(500).send({
                 message:

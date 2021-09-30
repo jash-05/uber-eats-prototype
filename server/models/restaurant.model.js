@@ -31,8 +31,8 @@ Restaurant.create = (newRestaurant, result) => {
     });
 };
 
-Restaurant.getAll = result => {
-    conn.query("SELECT * FROM restaurants", (err, res) => {
+Restaurant.getAll = (query_string, result) => {
+    conn.query(query_string, (err, res) => {
         if (err) {
             console.log("error: ", err);
             result(null, err);

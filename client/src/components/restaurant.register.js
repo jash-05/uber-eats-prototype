@@ -168,16 +168,11 @@ class RestaurantRegister extends Component{
         var headers = new Headers();
         //prevent page from refresh
         e.preventDefault();
-        const data = {
+        const restaurant_data = {
             restaurant_name : this.state.restaurant_name,
             owner_name: this.state.owner_name,
             email_id: this.state.email,
             pass: this.state.password,
-            address_line_1: this.state.address_line_1,
-            address_line_2: this.state.address_line_2,
-            city: this.state.city,
-            state: this.state.state,
-            zip: this.state.zip,
             country: this.state.country,
             phone_number: this.state.phone_number,
             vegetarian: this.state.vegetarian,
@@ -187,19 +182,38 @@ class RestaurantRegister extends Component{
             pickup: this.state.pickup,
             cover_image: this.state.cover_image
         }
-        console.log(data)
+        console.log(restaurant_data)
         //set the with credentials to true
         axios.defaults.withCredentials = true;
         // make a post request with the user data
-        axios.post('http://localhost:3001/restaurants',data)
+        axios.post('http://localhost:3001/restaurants',restaurant_data)
             .then(response => {
                 console.log("Status Code : ",response.status);
                 if(response.status === 200){
-                    console.log("Successful request");
+                    console.log("Successful request for storing restaurant info");
                     console.log(response);
                     console.log('Cookie status: ', cookie.load('cookie'));
+                    const address_data = {
+                        restaurant_ID: response.data.restaurant_id,
+                        address_line_1: this.state.address_line_1,
+                        address_line_2: this.state.address_line_2,
+                        city: this.state.city,
+                        state: this.state.state,
+                        zip: this.state.zip
+                    }
+                    axios.post('http://localhost:3001/restaurantAddress', address_data)
+                    .then(resp => {
+                        console.log("Status Code: ", resp.status);
+                        if (resp.status === 200) {
+                            console.log("Successful request for storing restaurant address");
+                            console.log(resp);
+                        } else {
+                            console.log("Unsuccessful request for storing restaurant address");
+                            console.log(resp)
+                        }
+                    })
                 } else{
-                    console.log("Unsuccessful request");
+                    console.log("Unsuccessful request for storing restaurant info");
                     console.log(response);
                 }
             });
@@ -255,7 +269,7 @@ class RestaurantRegister extends Component{
 
                             <Form.Group as={Col} controlId="formGridZip">
                             <Form.Label>Zip</Form.Label>
-                            <Form.Control onChange={this.zipChangeHandler} />
+                            <Form.Control onChange={this.zipChangeHandler} type="number" />
                             </Form.Group>
                         </Row>
 

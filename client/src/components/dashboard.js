@@ -14,6 +14,7 @@ import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import Badge from 'react-bootstrap/Badge';
 import BootstrapSwitchButton from 'bootstrap-switch-button-react'
+import { Link } from 'react-router-dom';
 
 
 // Define a Login Component
@@ -156,16 +157,17 @@ class Dashboard extends Component{
         const createCard = card => {
             return (
                 <Col sm={3} className="ml-3 mt-3"  style={{ width: '15rem' }}>
-                <Card>
+                <Link to={`/restaurants/${card.restaurant_ID}`} style={{textDecoration: 'none'}}>
+                    <Card>
                     <Card.Img variant="top" src={card.cover_image} />
                     <Card.Body>
-                        <Card.Title>{card.restaurant_name}</Card.Title>
+                        <Card.Title className="text-dark">{card.restaurant_name}</Card.Title>
                         <Card.Text>
-                            
                               {/* {card.restaurant_address} */}
                         </Card.Text>
                     </Card.Body>
                     </Card>
+                </Link>
                   </Col>
             )
         }
@@ -177,7 +179,7 @@ class Dashboard extends Component{
             <Container>
                 <Row className="m-4">
                     <Col xs={3} >
-                    <Container className="my-5">
+                        <Container className="my-5">
                             <Row>
                                 <p className="h4">Food options</p>
                             </Row>

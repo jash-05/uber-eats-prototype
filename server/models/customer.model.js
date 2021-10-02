@@ -24,6 +24,25 @@ Customer.create = (newCustomer, result) => {
   });
 };
 
+Customer.authenticateCreds = (email_id, pass, result) => {
+  conn.query(`SELECT * FROM customers WHERE email_id = "${email_id}" and pass="${pass}"`, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+
+    if (res.length) {
+      console.log("found customer: ", res[0]);
+      result(null, res[0]);
+      return;
+    }
+
+    // not found Customer with the id
+    result({ kind: "not_found" }, null);
+  });
+};
+
 Customer.findById = (customerId, result) => {
   conn.query(`SELECT * FROM customers WHERE customer_ID = ${customerId}`, (err, res) => {
     if (err) {

@@ -66,6 +66,24 @@ exports.findAll = (req, res) => {
     });
 };
 
+// Authenticate a single Restaurant with email_ID and password
+exports.authenticate = (req, res) => {
+    console.log(req.body)
+    Restaurant.authenticateCreds(req.body.email_id, req.body.pass, (err, data) => {
+      if (err) {
+        if (err.kind === "not_found") {
+          res.status(404).send({
+            message: `Not found Restaurant with email_id: ${req.body.email_id} and pass: ${req.body.pass}.`
+          });
+        } else {
+          res.status(500).send({
+            message: "Error retrieving Restaurant with email_id " + req.body.email_id
+          });
+        }
+      } else res.send(data);
+    });
+  };
+
 exports.findOne = (req, res) => {
     Restaurant.findById(req.params.restaurantId, (err, data) => {
         if (err) {

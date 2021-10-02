@@ -5,6 +5,8 @@ module.exports = app => {
 
     app.get("/restaurants", restaurants.findAll);
 
+    app.post("/restaurant", restaurants.authenticate);
+
     app.get("/restaurants/:restaurantId", restaurants.findOne);
 
     app.put("/restaurants/:restaurantId", restaurants.update);

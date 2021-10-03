@@ -99,6 +99,7 @@ require("./routes/restaurant.routes.js")(app);
 require("./routes/favourite.routes.js")(app);
 require("./routes/customer_address.routes.js")(app);
 require("./routes/restaurant_address.routes.js")(app);
+require("./routes/dish.routes.js")(app);
 
 app.listen(3001, () => {
     console.log('Server is running on port 3001');

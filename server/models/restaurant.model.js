@@ -64,7 +64,7 @@ Restaurant.authenticateCreds = (email_id, pass, result) => {
 };
 
 Restaurant.findById = (restaurant_id, result) => {
-    conn.query(`SELECT * FROM restaurants WHERE restaurant_ID = ${restaurant_id}`, (err, res) => {
+    conn.query(`SELECT * FROM restaurants AS r INNER JOIN restaurant_addresses AS a ON r.restaurant_ID = a.restaurant_ID WHERE r.restaurant_ID = ${restaurant_id}`, (err, res) => {
       if (err) {
         console.log("error: ", err);
         result(err, null);

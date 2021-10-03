@@ -48,10 +48,10 @@ exports.findAll = (req, res) => {
             selected_delivery_option = key;
         }
     }
-    let delivery_option_string = `${selected_food_options.join(" OR ")}`;
+    let food_option_string = `${selected_food_options.join(" OR ")}`;
     let query_string = "SELECT * FROM restaurants WHERE";
-    if (delivery_option_string){
-        query_string = `${query_string} (${delivery_option_string}) AND (${selected_delivery_option}=1);`;
+    if (food_option_string){
+        query_string = `${query_string} (${food_option_string}) AND (${selected_delivery_option}=1);`;
     } else {
         query_string = `${query_string} ${selected_delivery_option}=1;`;
     }

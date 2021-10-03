@@ -83,12 +83,11 @@ CREATE TABLE dishes (
     dish_ID INT PRIMARY KEY AUTO_INCREMENT,
     dish_name VARCHAR(50),
     category_ID INT,
-    main_ingredients VARCHAR(70),
+    main_ingredients VARCHAR(500),
     restaurant_ID INT,
-    price INT,
-    dish_details VARCHAR(100) DEFAULT "",
-    dish_images VARCHAR(500),
-    food_types VARCHAR(50)
+    price VARCHAR(5),
+    about VARCHAR(100),
+    dish_image VARCHAR(500)
 );
 
 CREATE TABLE favourites (

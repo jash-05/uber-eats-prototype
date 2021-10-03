@@ -68,8 +68,9 @@ CREATE TABLE orders (
     order_ID INT PRIMARY KEY AUTO_INCREMENT,
     restaurant_ID INT,
     customer_ID INT,
-    location_ID INT,
-    delivery_status VARCHAR(50)
+    address_ID INT,
+    order_status VARCHAR(50),
+    total_amount VARCHAR(10)
 );
 
 CREATE TABLE order_details (

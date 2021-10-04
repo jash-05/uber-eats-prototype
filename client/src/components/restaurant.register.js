@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import './../App.css';
 import axios from 'axios';
 import cookie from 'react-cookies';
-import {Redirect} from 'react-router';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
@@ -165,7 +164,7 @@ class RestaurantRegister extends Component{
     //submit Login handler to send a request to the node backend
     submitLogin = (e) => {
         console.log(`Restaurant name: ${this.state.restaurant_name}, Owner name: ${this.state.owner_name}, Email: ${this.state.email}, Password: ${this.state.password}, Country: ${this.state.country}, Phone number: ${this.state.phone_number}`);
-        var headers = new Headers();
+        // var headers = new Headers();
         //prevent page from refresh
         e.preventDefault();
         const restaurant_data = {

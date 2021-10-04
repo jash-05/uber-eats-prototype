@@ -6,7 +6,6 @@ import CustomerRegister from './customer.register';
 import RestaurantLogin from './restaurant.login';
 import RestaurantRegister from './restaurant.register';
 import Dashboard from './dashboard';
-import DashboardNavbar from './navbar';
 import RestaurantDetails from './restaurant.details';
 
 //Create a Main Component

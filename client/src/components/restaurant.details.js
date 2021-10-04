@@ -2,20 +2,12 @@ import React, {Component} from 'react';
 import './../App.css';
 import axios from 'axios';
 import cookie from 'react-cookies';
-import {Redirect} from 'react-router';
 import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
 import Image from 'react-bootstrap/Image';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Card from 'react-bootstrap/Card';
-import Badge from 'react-bootstrap/Badge';
-import BootstrapSwitchButton from 'bootstrap-switch-button-react'
-import { Link } from 'react-router-dom';
-import { Carousel } from 'bootstrap';
+import Form from 'react-bootstrap/Form';
 
 // Define a Login Component
 class RestaurantDetails extends Component{
@@ -26,26 +18,76 @@ class RestaurantDetails extends Component{
         //maintain the state required for this component
         this.state = {
             restaurant_ID: props.match.params.restaurant_ID,
+            customer_ID: 13,
             restaurant_name: "",
             short_address: "",
             cover_image: "",
             about: "",
             full_adress: "",
-            fetchedDishes: []
+            fetchedDishes: [],
+            order_info: {}
         }
         //Bind the handlers to this class
+        this.stateChangeHandler = this.stateChangeHandler.bind(this);
+        this.updateQuantityHandler = this.updateQuantityHandler.bind(this);
+        this.fetchRestaurantDetails = this.fetchRestaurantDetails.bind(this);
+        this.fetchDishes = this.fetchDishes.bind(this);
+        this.fetchCurrentOrder = this.fetchCurrentOrder.bind(this);
     }
     //Call the Will Mount to set the auth Flag to false
-    componentWillMount(){
+    componentDidMount(){
         this.fetchRestaurantDetails();
         this.fetchDishes();
         this.fetchCurrentOrder();
     }
-    stateChangeHandler(stateName, stateValue){
+    stateChangeHandler = (stateName, stateValue) => {
         console.log(stateName, stateValue)
         this.setState({
             stateName: stateValue
         })
+    }
+    updateQuantityHandler = async (e) => {
+        console.log("Update quantity handler")
+        let to_add = 0
+        if (e.target.innerText === "+"){
+            to_add = 1
+        } else {
+            to_add = -1
+        }
+        let quantity = parseInt(e.target.parentNode.parentNode.childNodes[1].lastChild.data)
+        let dish_ID = parseInt(e.target.parentNode.parentNode.childNodes[1].childNodes[0].childNodes[0].data)
+
+        let data = {
+            order_ID: this.state.order_info.order_ID,
+            dish_ID: dish_ID,
+            quantity: Math.max(quantity + to_add, 0),
+            restaurant_ID: this.state.restaurant_ID,
+            customer_ID: this.state.customer_ID
+        }
+        try {
+            await this.addItemToOrder(data);
+            try {
+                await this.fetchCurrentOrder();
+            } catch (err) {
+                console.error(err);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+    addItemToOrder = async (data) => {
+        try {
+            const response  = await axios.post('http://localhost:3001/addOrderItem', data);
+            console.log("Status Code: ", response.status);
+            if (response.status === 200){
+                console.log("Successful request");
+            } else {
+                console.log("Unsuccessful request");
+                console.log(response);
+            }   
+        } catch (err) {
+            console.error(err)
+        }
     }
     fetchRestaurantDetails = async () => {
         try {
@@ -92,7 +134,8 @@ class RestaurantDetails extends Component{
                         'main_ingredients': main_ingredients,
                         'price': response.data[i].price,
                         'about': response.data[i].about,
-                        "dish_image": response.data[i].dish_image
+                        "dish_image": response.data[i].dish_image,
+                        "quantity": 0
                     });
                 }
                 this.setState({
@@ -108,15 +151,46 @@ class RestaurantDetails extends Component{
         }
     }
     fetchCurrentOrder = async () => {
-        console.log("Fetched dishes: ")
-        console.log(this.state.fetchedDishes)
+        try {
+            console.log("Fetching current order")
+            const response = await axios.get('http://localhost:3001/getOrderDetails', {
+                params: {
+                    restaurant_ID: this.state.restaurant_ID,
+                    customer_ID: this.state.customer_ID
+                }
+            })
+            console.log("Status Code: ", response.status);
+            if (response.status === 200){
+                console.log("Successful request");
+                console.log(response.data);
+                let prev_state = this.state.fetchedDishes
+                let new_state = []
+                for (let i=0; i<prev_state.length;i++){
+                    let matchedDish = response.data.dishes.filter(x => x.dish_ID === prev_state[i].dish_ID)
+                    if(matchedDish.length>0){
+                        prev_state[i].quantity = matchedDish[0].quantity
+                    }
+                    new_state.push(prev_state[i])
+                }
+                let order_info = response.data
+                delete order_info["dishes"]
+                this.setState({
+                    order_info: order_info,
+                    fetchedDishes: new_state
+                });
+            } else {
+                console.log("Unsuccessful request");
+                console.log(response);
+            }
+        } catch (err) {
+            console.error(err);
+        }
     }
     render(){
-        console.log("Fetched dishes")
-        console.log(this.state.fetchedDishes)
+        console.log("Rendering")
         const createCard = card => {
             return (
-                <Col sm={3} className="m-3  border"  style={{ width: '30rem', height:'12rem'}}>
+                <Col sm={3} className="m-3  border"  style={{ width: '32rem', height:'12rem'}}>
                     <Row className="p-2">
                         <Col xs={9} md={8}>
                             <Row className="h5 mt-2 mb-4">{card.dish_name}</Row>
@@ -126,13 +200,14 @@ class RestaurantDetails extends Component{
                             <Image src={card.dish_image} className="img-fluid" style={{height: '8rem'}} />
                             <Row className="mt-1">
                                 <Col>
-                                    <Button size="md" variant="dark">-</Button>
+                                    <Button onClick={this.updateQuantityHandler} size="md" variant="dark">-</Button>
                                 </Col>
-                                <Col className="h5 my-auto">
-                                    5
+                                <Col className="h6 my-auto">
+                                    <Form.Label visuallyHidden>{card.dish_ID}</Form.Label>
+                                    {card.quantity}
                                 </Col>
                                 <Col>
-                                    <Button size="md" variant="dark">+</Button>
+                                    <Button onClick={this.updateQuantityHandler} size="md" variant="dark">+</Button>
                                 </Col>
                             </Row>
                         </Col>

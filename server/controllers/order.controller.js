@@ -45,6 +45,7 @@ exports.getOrder = (req, res) => {
 }
 
 exports.addItem = (req, res) => {
+    console.log("Adding order item with following data: ")
     console.log(req.body);
     
     let order_item_dict = {

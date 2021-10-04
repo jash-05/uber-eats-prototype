@@ -2,12 +2,8 @@ import React, {Component} from 'react';
 import './../App.css';
 import axios from 'axios';
 import cookie from 'react-cookies';
-import {Redirect} from 'react-router';
 import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
 import Image from 'react-bootstrap/Image';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -43,7 +39,7 @@ class WelcomeUser extends Component{
     //submit Login handler to send a request to the node backend
     submitLogin = (e) => {
         console.log(`First name: ${this.state.first_name}, Last name: ${this.state.last_name}, Email: ${this.state.email}, Password: ${this.state.password}, Country: ${this.state.country}, Phone number: ${this.state.phone_number}`)
-        var headers = new Headers();
+        // var headers = new Headers();
         //prevent page from refresh
         e.preventDefault();
         const data = {

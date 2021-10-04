@@ -1,16 +1,7 @@
 import React, {Component} from 'react';
 import './../App.css';
-import axios from 'axios';
-import cookie from 'react-cookies';
-import {Redirect} from 'react-router';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import Container from 'react-bootstrap/Container';
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
-import Image from 'react-bootstrap/Image';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav'
 import FormControl from 'react-bootstrap/FormControl'

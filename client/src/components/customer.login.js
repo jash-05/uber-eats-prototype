@@ -6,11 +6,7 @@ import {Redirect} from 'react-router';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
 import Image from 'react-bootstrap/Image';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 
 // Define a Login Component
 class CustomerLogin extends Component{
@@ -51,7 +47,7 @@ class CustomerLogin extends Component{
     //submit Login handler to send a request to the node backend
     submitLogin = (e) => {
         console.log(`Email: ${this.state.email}, Password: ${this.state.password}`)
-        var headers = new Headers();
+        // var headers = new Headers();
         //prevent page from refresh
         e.preventDefault();
         const data = {

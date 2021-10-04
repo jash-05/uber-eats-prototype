@@ -4,4 +4,8 @@ module.exports = app => {
     app.get("/getOrderDetails", orders.getOrder);
     
     app.post("/addOrderItem", orders.addItem);
+
+    app.get("/fetchOrdersForCustomer", orders.fetchOrdersForCustomer);
+
+    app.get("/fetchOrdersForRestaurant", orders.fetchOrdersForRestaurant);
 }

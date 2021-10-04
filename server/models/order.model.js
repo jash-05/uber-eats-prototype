@@ -86,28 +86,30 @@ Order.getAllOrderItems = (order_ID, result) => {
     });
 };
 
-Order.updateById = (id, restaurant, result) => {
-    conn.query(
-      "UPDATE restarants SET email = ?, name = ?, active = ? WHERE id = ?",
-      [restaurant.email, restaurant.name, restaurant.active, id],
-      (err, res) => {
+Order.getAllOrdersByCustomer = (customer_ID, result) => {
+    conn.query(`SELECT * FROM orders WHERE customer_ID=${customer_ID}`,
+    (err, res) => {
         if (err) {
-          console.log("error: ", err);
-          result(null, err);
-          return;
+            console.log("error: ", err);
+            result(null, err);
+            return;
         }
-  
-        if (res.affectedRows == 0) {
-          // not found restaurant with the id
-          result({ kind: "not_found" }, null);
-          return;
-        }
-  
-        console.log("updated restaurant: ", { id: id, ...restaurant });
-        result(null, { id: id, ...restaurant });
-      }
-    );
-  };
+        console.log("order: ",res);
+        result(null, res)
+    })
+}
 
+Order.getAllOrdersByRestaurant = (restaurant_ID, result) => {
+    conn.query(`SELECT * FROM orders WHERE restaurant_ID=${restaurant_ID}`,
+    (err, res) => {
+        if (err) {
+            console.log("error: ", err);
+            result(null, err);
+            return;
+        }
+        console.log("order: ",res);
+        result(null, res)
+    })
+}
  
 module.exports = Order;

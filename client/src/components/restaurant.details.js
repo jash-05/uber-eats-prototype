@@ -195,6 +195,7 @@ class RestaurantDetails extends Component{
                         <Col xs={9} md={8}>
                             <Row className="h5 mt-2 mb-4">{card.dish_name}</Row>
                             <Row className="text-muted">{card.main_ingredients}</Row>
+                            <Row className="my-4 px-2">${card.price}</Row>
                         </Col>
                         <Col xs={3} md={4}>
                             <Image src={card.dish_image} className="img-fluid" style={{height: '8rem'}} />

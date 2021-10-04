@@ -1,7 +1,50 @@
 const e = require("express");
 const Order = require("../models/order.model.js");
 
-exports.create = (req, res) => {
+exports.getOrder = (req, res) => {
+    console.log(req.query);
+    Order.getOrderInfo(req.query.customer_ID, req.query.restaurant_ID, (err, data) => {
+        if (err)
+            res.status(500).send({
+                message:
+                    err.message || "Some error occured while retrieving order!"
+            });
+        else {
+            if (data.length==0){
+                let order_dict = {
+                    restaurant_ID: req.query.restaurant_ID,
+                    customer_ID: req.query.customer_ID,
+                    order_status: "in-cart"
+                }
+                Order.createOrder(order_dict, (err, data) => {
+                    if(err)
+                    res.status(500).send({
+                        message:
+                            err.message || "Some error occured while creating a new order"
+                    });
+                    else {
+                        res.send(data);
+                    };
+                });
+                
+            } else {
+                console.log(data[0].order_ID)
+                Order.getAllOrderItems(data[0].order_ID, (err, fetched_items) => {
+                    if (err)
+                        res.status(500).send({
+                            message:
+                                err.message || "Some error occured while retrieving order items!"
+                        });
+                    else {
+                        res.send(Object.assign({}, data[0], {"dishes": fetched_items}))
+                    }
+                })
+            }
+        } 
+    })
+}
+
+exports.addItem = (req, res) => {
     console.log(req.body);
     
     let order_item_dict = {

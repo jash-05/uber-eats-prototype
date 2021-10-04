@@ -39,6 +39,7 @@ class RestaurantDetails extends Component{
     componentWillMount(){
         this.fetchRestaurantDetails();
         this.fetchDishes();
+        this.fetchCurrentOrder();
     }
     stateChangeHandler(stateName, stateValue){
         console.log(stateName, stateValue)
@@ -106,12 +107,16 @@ class RestaurantDetails extends Component{
             console.error(err);
         }
     }
+    fetchCurrentOrder = async () => {
+        console.log("Fetched dishes: ")
+        console.log(this.state.fetchedDishes)
+    }
     render(){
         console.log("Fetched dishes")
         console.log(this.state.fetchedDishes)
         const createCard = card => {
             return (
-                <Col sm={3} className="m-3  border"  style={{ width: '30rem', height:'10rem'}}>
+                <Col sm={3} className="m-3  border"  style={{ width: '30rem', height:'12rem'}}>
                     <Row className="p-2">
                         <Col xs={9} md={8}>
                             <Row className="h5 mt-2 mb-4">{card.dish_name}</Row>
@@ -119,6 +124,17 @@ class RestaurantDetails extends Component{
                         </Col>
                         <Col xs={3} md={4}>
                             <Image src={card.dish_image} className="img-fluid" style={{height: '8rem'}} />
+                            <Row className="mt-1">
+                                <Col>
+                                    <Button size="md" variant="dark">-</Button>
+                                </Col>
+                                <Col className="h5 my-auto">
+                                    5
+                                </Col>
+                                <Col>
+                                    <Button size="md" variant="dark">+</Button>
+                                </Col>
+                            </Row>
                         </Col>
                     </Row>
                   </Col>

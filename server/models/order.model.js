@@ -11,6 +11,18 @@ const Order = function (order) {
     this.total_amount = order.total_amount
 }
 
+Order.getOrderInfo = (customer_ID, restaurant_ID, result) => {
+    conn.query(`SELECT * FROM orders WHERE customer_ID = ${customer_ID} AND restaurant_ID = ${restaurant_ID} AND order_status = "in-cart";`, (err, res) => {
+        if (err) {
+            console.log("error: ", err);
+            result(null, err);
+            return;
+        }
+
+        console.log("order_info: ", res);
+        result(null, res)
+    });
+};
 
 Order.createOrder = (newOrder, result) => {
     conn.query("INSERT INTO orders SET ?", newOrder, (err, res) => {
@@ -61,8 +73,8 @@ Order.upsertOrderItem = (newOrderItem, result) => {
     });
 };
 
-Order.getAll = (restaurant_ID, result) => {
-    conn.query(`SELECT * FROM dishes WHERE restaurant_ID = ${restaurant_ID}`, (err, res) => {
+Order.getAllOrderItems = (order_ID, result) => {
+    conn.query(`SELECT * FROM order_details WHERE order_ID = ${order_ID}`, (err, res) => {
         if (err) {
             console.log("error: ", err);
             result(null, err);

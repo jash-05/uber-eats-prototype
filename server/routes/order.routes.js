@@ -1,5 +1,7 @@
 module.exports = app => {
     const orders = require("../controllers/order.controller.js");
 
-    app.post("/addOrderItem", orders.create);
+    app.get("/getOrderDetails", orders.getOrder);
+    
+    app.post("/addOrderItem", orders.addItem);
 }

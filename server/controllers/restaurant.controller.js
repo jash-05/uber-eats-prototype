@@ -80,7 +80,14 @@ exports.authenticate = (req, res) => {
             message: "Error retrieving Restaurant with email_id " + req.body.email_id
           });
         }
-      } else res.send(data);
+      } else {
+          req.session.user = {
+              user_type: "restaurant",
+              id: data.restaurant_ID
+          }
+          res.cookie('restaurant',data.restaurant_ID,{maxAge: 900000, httpOnly: false, path : '/'});
+          res.send(data)
+        };
     });
   };
 

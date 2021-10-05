@@ -84,7 +84,7 @@ class Login extends Component{
         }
         return(
             <div>
-                {redirectVar}
+                {/* {redirectVar} */}
             <div class="container">
                 
                 <div class="login-form">

@@ -6,6 +6,8 @@ import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav'
 import FormControl from 'react-bootstrap/FormControl'
 import NavDropdown from 'react-bootstrap/NavDropdown'
+import Image from 'react-bootstrap/Image';
+import Container from 'react-bootstrap/Container';
 
 // Define a Login Component
 class DashboardNavbar extends Component{
@@ -39,38 +41,31 @@ class DashboardNavbar extends Component{
     }
     render(){
         return(
-        <Navbar bg="light" expand="lg">
-            <Navbar.Brand href="#">Navbar scroll</Navbar.Brand>
-            <Navbar.Toggle aria-controls="navbarScroll" />
-            <Navbar.Collapse id="navbarScroll">
-                <Nav
-                className="mr-auto my-2 my-lg-0"
-                style={{ maxHeight: '100px' }}
-                navbarScroll
-                >
-                <Nav.Link href="#action1">Home</Nav.Link>
-                <Nav.Link href="#action2">Link</Nav.Link>
-                <NavDropdown title="Link" id="navbarScrollingDropdown">
-                    <NavDropdown.Item href="#action3">Action</NavDropdown.Item>
-                    <NavDropdown.Item href="#action4">Another action</NavDropdown.Item>
-                    <NavDropdown.Divider />
-                    <NavDropdown.Item href="#action5">Something else here</NavDropdown.Item>
-                </NavDropdown>
-                <Nav.Link href="#" disabled>
-                    Link
-                </Nav.Link>
-                </Nav>
-                <Form className="d-flex">
-                <FormControl
-                    type="search"
-                    placeholder="Search"
-                    className="mr-2"
-                    aria-label="Search"
-                />
-                <Button variant="outline-success">Search</Button>
-                </Form>
-            </Navbar.Collapse>
-        </Navbar>
+            <>
+                <Navbar expand="xxl">
+                    <Container fluid className="px-5 py-3">
+                    <Navbar.Brand href="/dashboard">
+                        <Image 
+                            src="https://uber-eats-prototype.s3.us-west-1.amazonaws.com/logo.svg"
+                            style={{height: "2rem"}}
+                        ></Image>
+                    </Navbar.Brand>
+                    <Nav>
+                        <Form className="d-flex mx-5">
+                            <FormControl
+                                type="search"
+                                size="md"
+                                placeholder="What are you craving?"
+                                className="mx-2 px-4 py-1 border-0 border-bottom"
+                                style = {{width: "30rem", backgroundColor: "#f6f6f6"}}
+                            />
+                            {/* <Button variant="outline-success">Search</Button> */}
+                        </Form>
+                        <Button variant="dark" size="md">Cart • 2</Button>
+                    </Nav>
+                    </Container>
+                </Navbar>
+            </>
         )
     }
 }

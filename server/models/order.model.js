@@ -74,7 +74,7 @@ Order.upsertOrderItem = (newOrderItem, result) => {
 };
 
 Order.getAllOrderItems = (order_ID, result) => {
-    conn.query(`SELECT * FROM order_details WHERE order_ID = ${order_ID}`, (err, res) => {
+    conn.query(`SELECT * FROM order_details AS o INNER JOIN dishes as d ON o.dish_ID = d.dish_ID WHERE order_ID = ${order_ID}`, (err, res) => {
         if (err) {
             console.log("error: ", err);
             result(null, err);
@@ -112,4 +112,16 @@ Order.getAllOrdersByRestaurant = (restaurant_ID, result) => {
     })
 }
  
+Order.placeOrder = (orderDetails, result) => {
+    conn.query(`UPDATE orders SET total_amount=${orderDetails.total_amount}, address_ID= ${orderDetails.address_ID}, order_status="placed" WHERE order_ID=${orderDetails.order_ID};`, (err, res) => {
+        if (err) {
+            console.log("error: ", err);
+            result(null, err);
+            return;
+        }
+        console.log("order: ", res);
+        result(null, res);
+    })
+}
+
 module.exports = Order;

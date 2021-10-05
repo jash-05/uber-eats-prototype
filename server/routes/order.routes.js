@@ -8,4 +8,6 @@ module.exports = app => {
     app.get("/fetchOrdersForCustomer", orders.fetchOrdersForCustomer);
 
     app.get("/fetchOrdersForRestaurant", orders.fetchOrdersForRestaurant);
+    
+    app.post('/placeOrder', orders.placeOrder);
 }

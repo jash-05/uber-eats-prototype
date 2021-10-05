@@ -8,6 +8,9 @@ import Image from 'react-bootstrap/Image';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
+import Modal from 'react-bootstrap/Modal';
+import { Link } from 'react-router-dom';
+import Checkout from './checkout';
 
 // Define a Login Component
 class RestaurantDetails extends Component{
@@ -25,7 +28,9 @@ class RestaurantDetails extends Component{
             about: "",
             full_adress: "",
             fetchedDishes: [],
-            order_info: {}
+            selectedDishes: [],
+            order_info: {},
+            showModal: false
         }
         //Bind the handlers to this class
         this.stateChangeHandler = this.stateChangeHandler.bind(this);
@@ -33,6 +38,9 @@ class RestaurantDetails extends Component{
         this.fetchRestaurantDetails = this.fetchRestaurantDetails.bind(this);
         this.fetchDishes = this.fetchDishes.bind(this);
         this.fetchCurrentOrder = this.fetchCurrentOrder.bind(this);
+        this.viewOrder = this.viewOrder.bind(this);
+        this.closeModal = this.closeModal.bind(this);
+        this.checkoutOrder = this.checkoutOrder.bind(this);
     }
     //Call the Will Mount to set the auth Flag to false
     componentDidMount(){
@@ -186,8 +194,54 @@ class RestaurantDetails extends Component{
             console.error(err);
         }
     }
+    viewOrder = () => {
+        console.log("Inside view order function")
+        console.log(this.state.fetchedDishes)
+        // console.log(this.state.fetchedDishes[0])
+        let selected_dishes = []
+        let total_order_amount = 0.0
+        for (let i=0; i<this.state.fetchedDishes.length; i++) {
+            if (this.state.fetchedDishes[i].quantity > 0) {
+                selected_dishes.push(
+                    this.state.fetchedDishes[i]
+                )
+                total_order_amount += (this.state.fetchedDishes[i].quantity 
+                    * this.state.fetchedDishes[i].price)
+            }
+        }
+        console.log(selected_dishes);
+        console.log(`${total_order_amount}`);
+        console.log(this.state.order_info);
+        let new_order_info = this.state.order_info
+        new_order_info.total_amount = Math.round(total_order_amount*100)/100
+        this.setState({
+            showModal: !this.state.showModal,
+            order_info: new_order_info,
+            selectedDishes: selected_dishes
+        })
+    }
+    closeModal = () => {
+        this.setState({
+            showModal: !this.state.showModal
+        })
+    }
+    checkoutOrder = () => {
+        console.log("Inside checkout order function")
+        this.setState({
+            showModal: !this.state.showModal
+        })
+    }
     render(){
         console.log("Rendering")
+        const createOrderItemRow = row => {
+            return (
+                <Row>
+                    <Col xs={1}> {row.quantity} </Col>
+                    <Col xs={9}> {row.dish_name} </Col>
+                    <Col xs={2}> {`$${Math.round(row.quantity * row.price * 100)/100}`} </Col>
+                </Row>
+            )
+        }
         const createCard = card => {
             return (
                 <Col sm={3} className="m-3  border"  style={{ width: '32rem', height:'12rem'}}>
@@ -234,12 +288,45 @@ class RestaurantDetails extends Component{
                         {`${this.state.full_address}`}
                     </Row>
                 </Container>
+                <Container className="m-5">
+                    <Button variant="dark" onClick={this.viewOrder}>
+                        View Cart
+                    </Button>
+
+                    <Modal 
+                        show={this.state.showModal} 
+                        onHide={this.closeModal}
+                        backdrop="static"
+                        keyboard={false}
+                        centered
+                    >
+                        <Modal.Header closeButton>
+                        <Modal.Title>Current Order</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            {this.state.selectedDishes.map(createOrderItemRow)}
+                            <Row className="mt-4">
+                                <Col xs={1}></Col>
+                                <Col xs={9}>Total amount:</Col>
+                                <Col xs={2}> {`$${this.state.order_info.total_amount}`} </Col>
+                            </Row>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Link to={`/checkout/${this.state.restaurant_ID}`}>
+                                <Button className="mx-auto" variant="dark" onClick={this.checkoutOrder}>
+                                    Go to checkout • {`$${this.state.order_info.total_amount}`}
+                                </Button>
+                            </Link>
+                        </Modal.Footer>
+                    </Modal>
+                </Container>
                 <Container>
                     <Row>
                         {this.state.fetchedDishes.map(createCard)}
                     </Row>
                 </Container>
             </Container>
+            
         )
     }
 }

@@ -7,6 +7,7 @@ import RestaurantLogin from './restaurant.login';
 import RestaurantRegister from './restaurant.register';
 import Dashboard from './dashboard';
 import RestaurantDetails from './restaurant.details';
+import Checkout from './checkout'
 
 //Create a Main Component
 class Main extends Component {
@@ -22,6 +23,7 @@ class Main extends Component {
                 <Route path="/restaurantRegister" component={RestaurantRegister}/>
                 <Route path="/dashboard" component={Dashboard}/>
                 <Route path="/restaurants/:restaurant_ID" component={RestaurantDetails}/>
+                <Route path="/checkout/:restaurant_ID" component={Checkout}/>
             </div>
         )
     }

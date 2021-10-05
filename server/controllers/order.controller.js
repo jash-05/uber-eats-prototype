@@ -119,3 +119,24 @@ exports.fetchOrdersForRestaurant = (req, res) => {
         else res.send(data);
     })
 }
+
+exports.placeOrder = (req, res) => {
+    console.log("Placing order with the following params");
+    console.log(req.body)
+    let order_dict = {
+        order_ID: req.body.order_ID,
+        total_amount: req.body.total_amount,
+        address_ID: req.body.address_ID
+    }
+    Order.placeOrder(order_dict, (err, data) => {
+        if(err){
+            res.status(500).send({
+                message:
+                    err.message || "Some error occured while placing the order"
+            });
+        } else {
+            console.log(data);
+            res.send(data);
+        }
+    })
+}

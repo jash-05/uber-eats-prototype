@@ -18,6 +18,9 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import ReactS3 from 'react-s3';
 import s3_config from '../config/s3.config.js';
 import { object } from 'prop-types';
+import InputGroup from 'react-bootstrap/InputGroup';
+import FormSelect from 'react-bootstrap/FormSelect';
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
 
 // Define a Login Component
 class RestaurantProfile extends Component{
@@ -49,7 +52,11 @@ class RestaurantProfile extends Component{
             about: "",
             full_adress: "",
             fetchedDishes: [],
-            cover_image_file: ""
+            cover_image_file: "",
+            showModal: false,
+            new_dish: {
+                category_ID: 1
+            }
         }
         //Bind the handlers to this class
         this.setRestaurantState = this.setRestaurantState.bind(this);
@@ -70,6 +77,10 @@ class RestaurantProfile extends Component{
         this.pickupChangeHandler = this.pickupChangeHandler.bind(this);
         this.coverImageChangeHandler = this.coverImageChangeHandler.bind(this);
         this.submitUpdate = this.submitUpdate.bind(this);
+        this.toggleModal = this.toggleModal.bind(this);
+        this.dishFieldsChangeHandler = this.dishFieldsChangeHandler.bind(this);
+        this.addNewDish = this.addNewDish.bind(this);
+        this.selectedDishTypeChangeHandler = this.selectedDishTypeChangeHandler.bind(this);
     }
     //Call the Will Mount to set the auth Flag to false
     componentDidMount(){
@@ -247,7 +258,6 @@ class RestaurantProfile extends Component{
             
         }
     }
-    
     submitUpdate = async (e) => {
         //prevent page from refresh
         e.preventDefault();
@@ -303,11 +313,77 @@ class RestaurantProfile extends Component{
                 }
             });
     }
+    toggleModal = () => {
+        this.setState({
+            showModal: !this.state.showModal
+        })
+    }
+    dishFieldsChangeHandler = (e) => {
+        let updated_dish = this.state.new_dish;
+        updated_dish[e.target.name] = e.target.value;
+        this.setState({
+            new_dish: updated_dish
+        });
+    }
+    selectedDishTypeChangeHandler = e => {
+        console.log(e)
+        let updated_dish = this.state.new_dish;
+        updated_dish["category_ID"] = parseInt(e.target.selectedOptions[0].id);
+        this.setState({
+            new_dish: updated_dish
+        });
+    }
+    dishImageChangeHandler = e => {
+        const file = e.target.files[0]
+        console.log(e.target.files[0])
+        let updated_dish = this.state.new_dish;
+        updated_dish['dish_image_file'] = file
+        this.setState({
+            new_dish: updated_dish
+        })
+    }
+    uploadDishImageToS3 = async () => {
+        if (this.state.new_dish.dish_image_file){
+            try {
+                const data = await ReactS3.uploadFile(this.state.new_dish.dish_image_file, s3_config)
+                let updated_dish = this.state.new_dish
+                updated_dish['dish_image'] = data.location
+                delete updated_dish['dish_image_file'];
+                this.setState({
+                    new_dish: updated_dish
+                })
+            } catch (err) {
+                console.error(err);
+            }
+            
+        }
+    }
+    addNewDish = async () => {
+        try {
+            await this.uploadDishImageToS3()
+            let data = this.state.new_dish;
+            data['restaurant_ID'] = parseInt(this.state.restaurant_ID);
+            console.log(data);
+            const response = await axios.post('http://localhost:3001/dish', data);
+            console.log("Status Code: ", response.status);
+            if (response.status === 200){
+                console.log("Successful request");
+                console.log(response.data)
+                this.setState({
+                    showModal: !this.state.showModal,
+                    new_dish: {}
+                })
+            } else {
+                console.log("Unsuccessful request");
+                console.log(response);
+            }
+        } catch (err) {
+            console.error(err)
+        }
+    }
     render(){
         console.log("Rendering")
-        console.log(this.state.vegetarian)
-        console.log(this.state.non_vegetarian)
-        console.log(this.state.vegan)
+        console.log(this.state.fetchedDishes)
         let redirectVar = null;
         if (!cookie.load('restaurant')){
             redirectVar = <Redirect to="/restaurantLogin"/>
@@ -323,6 +399,13 @@ class RestaurantProfile extends Component{
                         </Col>
                         <Col xs={3} md={4}>
                             <Image src={card.dish_image} className="img-fluid" style={{height: '8rem'}} />
+                            <Row className="mt-3 mb-1 px-5">
+                                <Link to={`/editDish/${card.dish_ID}`}>
+                                    <Button size="sm" variant="dark">
+                                        Edit
+                                    </Button>
+                                </Link>
+                            </Row>
                         </Col>
                     </Row>
                   </Col>
@@ -348,7 +431,7 @@ class RestaurantProfile extends Component{
                     </Row>
                 </Container>
                 <Container className="my-5">
-                    <Tabs defaultActiveKey="first">
+                    <Tabs defaultActiveKey="second">
                         <Tab eventKey="first" title="Profile">
                             <Container className="mt-5">
                                 <Form>
@@ -472,6 +555,70 @@ class RestaurantProfile extends Component{
                             </Container>
                             <Row className="my-5">
                                 {this.state.fetchedDishes.map(createCard)}
+                                <Col sm={3} className="m-3  border"  style={{ width: '32rem', height:'12rem'}}>
+                                    <Row className="p-2">
+                                        <Col xs={9} md={8}>
+                                            <Button size="lg" className="my-5 mx-3" variant="dark" onClick={this.toggleModal}>
+                                                + Add new dish
+                                            </Button>
+                                            <Modal 
+                                                show={this.state.showModal} 
+                                                onHide={this.toggleModal}
+                                                backdrop="static"
+                                                keyboard={false}
+                                                centered
+                                            >
+                                                <Modal.Header closeButton>
+                                                <Modal.Title>Enter details of the new dish</Modal.Title>
+                                                </Modal.Header>
+                                                <Modal.Body>
+                                                    <Form.Group className="mb-3" controlId="formGridAddressType">
+                                                        <Form.Label>Dish name</Form.Label>
+                                                        <Form.Control name="dish_name" onChange={this.dishFieldsChangeHandler} placeholder="Eg: Avocado Toast, Greek Salad, etc" />
+                                                    </Form.Group>
+
+                                                    <Form.Group className="mb-3" controlId="formGridAddress1">
+                                                        <Form.Label>Main ingredients</Form.Label>
+                                                        <Form.Control name="main_ingredients" onChange={this.dishFieldsChangeHandler} placeholder="Eg: ice, coconut milk, matcha green tea"/>
+                                                    </Form.Group>
+
+                                                    <Row className="mb-3">
+                                                        <Form.Group as={Col} controlId="formGridCity">
+                                                        <Form.Label>Price</Form.Label>
+                                                        <InputGroup>
+                                                        <InputGroup.Text>$</InputGroup.Text>
+                                                        <Form.Control type="number" name="price" onChange={this.dishFieldsChangeHandler} />
+                                                        </InputGroup>
+                                                        </Form.Group>
+                                                        
+                                                        <Form.Group as={Col}>
+                                                            <Form.Label>Dish type</Form.Label>
+                                                            <Form.Select size="sm" onChange={this.selectedDishTypeChangeHandler}>
+                                                                <option id="1">Appetizers</option>
+                                                                <option id="2">Salads</option>
+                                                                <option id="3">Main Course</option>
+                                                                <option id="4">Desserts</option>
+                                                                <option id="5">Beverages</option>
+                                                            </Form.Select>
+                                                        </Form.Group>
+                                                    </Row>
+                                                    <Form.Group controlId="formCoverImage" className="mb-3">
+                                                        <Form.Label>Upload a picture of the dish</Form.Label>
+                                                        <Form.Control onChange={this.dishImageChangeHandler} type="file" />
+                                                    </Form.Group>
+                                                </Modal.Body>
+                                                <Modal.Footer>
+                                                    <Button className="mx-auto" variant="dark" onClick={this.addNewDish}>
+                                                        Add dish
+                                                    </Button>
+                                                </Modal.Footer>
+                                            </Modal>
+                                        </Col>
+                                        <Col xs={3} md={4}>
+                                            <Image src="https://uber-eats-prototype.s3.us-west-1.amazonaws.com/dish_icon.png" className="img-fluid" style={{height: '8rem'}} />
+                                        </Col>
+                                    </Row>
+                                </Col>
                             </Row>
                         </Tab>
                         <Tab eventKey="third" title="Orders">
@@ -491,8 +638,6 @@ class RestaurantProfile extends Component{
         )
     }
 }
-
-
 
 //export Login Component
 export default RestaurantProfile;

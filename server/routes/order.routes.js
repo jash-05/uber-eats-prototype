@@ -10,4 +10,6 @@ module.exports = app => {
     app.get("/fetchOrdersForRestaurant", orders.fetchOrdersForRestaurant);
     
     app.post('/placeOrder', orders.placeOrder);
+
+    app.post('/updateOrderStatus', orders.updateStatus);
 }

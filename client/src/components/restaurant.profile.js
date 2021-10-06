@@ -21,6 +21,8 @@ import { object } from 'prop-types';
 import InputGroup from 'react-bootstrap/InputGroup';
 import FormSelect from 'react-bootstrap/FormSelect';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
+import Card from 'react-bootstrap/Card';
+import Accordion from 'react-bootstrap/Accordion';
 
 // Define a Login Component
 class RestaurantProfile extends Component{
@@ -56,7 +58,10 @@ class RestaurantProfile extends Component{
             showModal: false,
             new_dish: {
                 category_ID: 1
-            }
+            },
+            fetchedOrders: [],
+            filteredOrders: [],
+            selectedOrderFilter: "all"
         }
         //Bind the handlers to this class
         this.setRestaurantState = this.setRestaurantState.bind(this);
@@ -81,12 +86,16 @@ class RestaurantProfile extends Component{
         this.dishFieldsChangeHandler = this.dishFieldsChangeHandler.bind(this);
         this.addNewDish = this.addNewDish.bind(this);
         this.selectedDishTypeChangeHandler = this.selectedDishTypeChangeHandler.bind(this);
+        this.fetchOrders = this.fetchOrders.bind(this);
+        this.selectedOrderFilterChangeHandler = this.selectedOrderFilterChangeHandler.bind(this);
+        this.orderStatusChangeHandler = this.orderStatusChangeHandler.bind(this);
     }
     //Call the Will Mount to set the auth Flag to false
     componentDidMount(){
         this.setRestaurantState();
         this.fetchRestaurantDetails();
         this.fetchDishes();
+        this.fetchOrders();
     }
     setRestaurantState = async () => {
         if (cookie.load('restaurant')) {
@@ -162,6 +171,28 @@ class RestaurantProfile extends Component{
                 }
                 this.setState({
                     fetchedDishes: dishesData
+                })
+                console.log('Cookie status: ', cookie.load('cookie'));
+            } else{
+                console.log("Unsuccessful request");
+                console.log(response);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+    fetchOrders = async () => {
+        try {
+            await this.setRestaurantState();
+            console.log('Fetching dishes')
+            const response = await axios.get('http://localhost:3001/fetchOrdersForRestaurant', {params:{restaurant_ID: this.state.restaurant_ID}})
+            console.log("Status Code : ",response.status);
+            if(response.status === 200){
+                console.log("Successful request of fetching orders");
+                console.log(response.data);
+                this.setState({
+                    fetchedOrders: response.data,
+                    filteredOrders: response.data
                 })
                 console.log('Cookie status: ', cookie.load('cookie'));
             } else{
@@ -355,7 +386,6 @@ class RestaurantProfile extends Component{
             } catch (err) {
                 console.error(err);
             }
-            
         }
     }
     addNewDish = async () => {
@@ -373,6 +403,7 @@ class RestaurantProfile extends Component{
                     showModal: !this.state.showModal,
                     new_dish: {}
                 })
+                window.location.reload(false);
             } else {
                 console.log("Unsuccessful request");
                 console.log(response);
@@ -381,9 +412,51 @@ class RestaurantProfile extends Component{
             console.error(err)
         }
     }
+    selectedOrderFilterChangeHandler = (e) => {
+        let filter = e.target.value;
+        console.log("Filter: ", filter)
+        if (filter === "all"){
+            this.setState({
+                selectedOrderFilter: filter,
+                filteredOrders: this.state.fetchedOrders
+            })
+        } else {
+            let filteredOrders = []
+            for(let i=0;i<this.state.fetchedOrders.length;i++) {
+                if (this.state.fetchedOrders[i].order_status === filter) {
+                    filteredOrders.push(this.state.fetchedOrders[i])
+                }
+            }
+            this.setState({
+                selectedOrderFilter: filter,
+                filteredOrders: filteredOrders
+            })
+        }
+    }
+    orderStatusChangeHandler = async (e) => {
+        if (["placed", "delivered", "cancelled"].includes(e.target.name)) {
+            try {
+                const data = {
+                    order_ID: e.target.id,
+                    order_status: e.target.name
+                }
+                const response = await axios.post('http://localhost:3001/updateOrderStatus', data)
+                if (response.status === 200){
+                    console.log("Successful request")
+                    console.log(response.data)
+                    await this.fetchOrders();
+                    window.location.reload(false);
+                } else {
+                    console.log("Unsuccessful request")
+                }
+            } catch (err) {
+                console.error(err)
+            }
+        }
+    }
     render(){
         console.log("Rendering")
-        console.log(this.state.fetchedDishes)
+        console.log(this.state.filteredOrders)
         let redirectVar = null;
         if (!cookie.load('restaurant')){
             redirectVar = <Redirect to="/restaurantLogin"/>
@@ -411,6 +484,97 @@ class RestaurantProfile extends Component{
                   </Col>
             )
         }
+        const capitalizeFirstLetter = text => {
+            return text.charAt(0).toUpperCase() + text.slice(1)
+        }
+        const createDishItemRow = row => {
+            return (
+                <Row>
+                    <Col xs={1}> {row.quantity} </Col>
+                    <Col xs={9}> {row.dish_name} </Col>
+                    <Col xs={2}> {`$${Math.round(row.quantity * row.price * 100)/100}`} </Col>
+                </Row>
+            )
+        } 
+        const formatDishes = (dish_IDs, dish_names, dish_prices, dish_quantities) => {
+            return dish_IDs.map((id, index) => {
+                return {
+                    dish_ID: id,
+                    dish_name: dish_names[index],
+                    price: dish_prices[index],
+                    quantity: dish_quantities[index]
+                }
+            })
+        }
+        const showDropdownButtons = (orderStatus) => {
+            return (
+                <Dropdown.Item value={orderStatus.x}>{orderStatus.x}</Dropdown.Item>
+            )
+        }
+        const createOrderRow = row => {
+            return (
+                <Col className="m-3">
+                    <Card style={{width: "40rem"}}>
+                    <Card.Header>
+                        <Row className="p-1">
+                        <Col xs={8}>
+                            Status: <strong>{capitalizeFirstLetter(((row.order_status==="placed") ? "New Order" : row.order_status))}</strong>
+                        </Col>
+                        <Col xs={2}>
+                            Order # {row.order_ID}
+                        </Col>
+                        <Col xs={2}>
+                            {`$${row.total_amount ? row.total_amount : ""}`}
+                        </Col>
+                        </Row>
+                    </Card.Header>
+                    <Card.Body>
+                        <Link to={`/customerPublicProfile/${row.customer_ID}`} style={{ textDecoration: 'none' }}>
+                            <Card.Title className="text-dark">{`${row.first_name} ${row.last_name}`}</Card.Title>
+                        </Link>
+                        <Card.Text>
+                            {`${row.line1} ${row.line2}, ${row.city}, ${row.state_name} ${row.zipcode}`}
+                        </Card.Text>
+                        <Accordion className="my-3">
+                        <Accordion.Item eventKey="0">
+                            <Accordion.Header>View order details</Accordion.Header>
+                            <Accordion.Body>
+                                {formatDishes(row.dish_IDs.split(','), row.dish_names.split(','), row.dish_prices.split(','), row.dish_quantities.split(',')).map(createDishItemRow)}
+                                <Row className="mt-4">
+                                    <Col xs={1}></Col>
+                                    <Col xs={9}> Total amount: </Col>
+
+                                    <Col xs={2}> {`$${row.total_amount}`} </Col>
+                                </Row>
+                            </Accordion.Body>
+                        </Accordion.Item>
+                        </Accordion>
+                        <Row>
+                            <Col xs={4}>
+                                {/* <Button variant="dark" value="5" onClick={this.orderStatusChangeHandler}>Update order status</Button> */}
+                                <DropdownButton
+                                    id="dropdown-button-dark-example2"
+                                    variant="dark"
+                                    menuVariant="dark"
+                                    title="Update order status"
+                                    onClick={this.orderStatusChangeHandler}
+                                >   
+                                    <Dropdown.Item name="placed" id={row.order_ID}>New Order</Dropdown.Item>
+                                    <Dropdown.Item name="delivered" id={row.order_ID}>Delivered</Dropdown.Item>
+                                    <Dropdown.Item name="cancelled" id={row.order_ID}>Cancelled</Dropdown.Item>
+                                </DropdownButton>
+                            </Col>
+                            <Col xs={4}>
+                                <Link to={`/customerPublicProfile/${row.customer_ID}`} style={{ textDecoration: 'none' }}>
+                                    <Button variant="dark">Visit customer profile</Button>
+                                </Link>
+                            </Col>
+                        </Row>                        
+                    </Card.Body>
+                    </Card>
+                </Col>
+            )
+        }
         return(
             <Container>
                 {redirectVar}
@@ -431,7 +595,7 @@ class RestaurantProfile extends Component{
                     </Row>
                 </Container>
                 <Container className="my-5">
-                    <Tabs defaultActiveKey="second">
+                    <Tabs defaultActiveKey="third">
                         <Tab eventKey="first" title="Profile">
                             <Container className="mt-5">
                                 <Form>
@@ -623,7 +787,17 @@ class RestaurantProfile extends Component{
                         </Tab>
                         <Tab eventKey="third" title="Orders">
                             <Container className="my-5">
-                                View my orders
+                                <Row className="my-4">
+                                    <Form.Select onChange={this.selectedOrderFilterChangeHandler}>
+                                        <option value="all">All orders</option>
+                                        <option value="placed">New orders</option>
+                                        <option value="delivered">Delivered orders</option>
+                                        <option value="cancelled">Cancelled orders</option>
+                                    </Form.Select>
+                                </Row>
+                                <Row>
+                                    {(this.state.filteredOrders.length ? this.state.filteredOrders.map(createOrderRow) : "")}
+                                </Row>
                             </Container>
                         </Tab>
                     </Tabs>

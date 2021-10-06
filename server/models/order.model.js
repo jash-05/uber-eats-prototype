@@ -100,7 +100,20 @@ Order.getAllOrdersByCustomer = (customer_ID, result) => {
 }
 
 Order.getAllOrdersByRestaurant = (restaurant_ID, result) => {
-    conn.query(`SELECT * FROM orders WHERE restaurant_ID=${restaurant_ID}`,
+    conn.query(`
+        SELECT o.order_ID, o.customer_ID, o.address_ID, o.order_status, o.total_amount, GROUP_CONCAT(od.dish_ID) AS dish_IDs, GROUP_CONCAT(d.dish_name) AS dish_names, GROUP_CONCAT(od.quantity) AS dish_quantities, GROUP_CONCAT(d.price) AS dish_prices, c.first_name, c.last_name, c.phone_number, ca.line1, ca.line2, ca.city, ca.state_name, ca.zipcode, ca.address_type 
+        FROM orders as o
+        LEFT JOIN order_details as od
+            ON o.order_ID = od.order_ID
+        LEFT JOIN dishes as d
+            ON od.dish_ID = d.dish_ID
+        LEFT JOIN customers as c
+            ON o.customer_ID = c.customer_ID
+        LEFT JOIN customer_addresses as ca
+            ON o.address_ID = ca.address_ID
+        WHERE o.restaurant_ID = ${restaurant_ID} AND NOT order_status = "in-cart"
+        GROUP BY o.order_ID;
+    `,
     (err, res) => {
         if (err) {
             console.log("error: ", err);
@@ -114,6 +127,18 @@ Order.getAllOrdersByRestaurant = (restaurant_ID, result) => {
  
 Order.placeOrder = (orderDetails, result) => {
     conn.query(`UPDATE orders SET total_amount=${orderDetails.total_amount}, address_ID= ${orderDetails.address_ID}, order_status="placed" WHERE order_ID=${orderDetails.order_ID};`, (err, res) => {
+        if (err) {
+            console.log("error: ", err);
+            result(null, err);
+            return;
+        }
+        console.log("order: ", res);
+        result(null, res);
+    })
+}
+
+Order.updateOrderStatus = (orderDetails, result) => {
+    conn.query(`UPDATE orders SET order_status="${orderDetails.order_status}"  WHERE order_ID=${orderDetails.order_ID};`, (err, res) => {
         if (err) {
             console.log("error: ", err);
             result(null, err);

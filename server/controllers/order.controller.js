@@ -140,3 +140,18 @@ exports.placeOrder = (req, res) => {
         }
     })
 }
+
+exports.updateStatus = (req, res) => {
+    console.log("Updating order status to: ", req.body)
+    Order.updateOrderStatus(req.body, (err, data) => {
+        if(err){
+            res.status(500).send({
+                message:
+                    err.message || "Some error occured while updating the order status"
+            });
+        } else {
+            console.log(data);
+            res.send(data);
+        }
+    })
+}

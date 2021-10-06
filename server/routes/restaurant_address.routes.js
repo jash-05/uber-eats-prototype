@@ -6,4 +6,7 @@ module.exports = app => {
   
     // Retrieve all restaurant addresses
     app.get("/restaurantAddress/:restaurant_ID", restaurant_addresses.findOne);
+
+    // Update restaurant address
+    app.put('/restaurantAddress', restaurant_addresses.update);
   };

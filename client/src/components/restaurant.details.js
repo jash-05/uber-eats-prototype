@@ -10,7 +10,6 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import { Link } from 'react-router-dom';
-import Checkout from './checkout';
 
 // Define a Login Component
 class RestaurantDetails extends Component{

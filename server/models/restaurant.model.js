@@ -82,10 +82,10 @@ Restaurant.findById = (restaurant_id, result) => {
     });
   };
 
-Restaurant.updateById = (id, restaurant, result) => {
+Restaurant.updateById = (restaurant, result) => {
     conn.query(
-      "UPDATE restarants SET email = ?, name = ?, active = ? WHERE id = ?",
-      [restaurant.email, restaurant.name, restaurant.active, id],
+      "UPDATE restaurants SET restaurant_name = ?, owner_name = ?, phone_number = ?, vegetarian = ?, non_vegetarian = ?, vegan = ?, delivery = ?, pickup = ?, cover_image = ? WHERE restaurant_ID = ?",
+      [restaurant.restaurant_name, restaurant.owner_name, restaurant.phone_number, restaurant.vegetarian, restaurant.non_vegetarian, restaurant.vegan, restaurant.delivery, restaurant.pickup, restaurant.cover_image, restaurant.restaurant_ID],
       (err, res) => {
         if (err) {
           console.log("error: ", err);
@@ -98,9 +98,7 @@ Restaurant.updateById = (id, restaurant, result) => {
           result({ kind: "not_found" }, null);
           return;
         }
-  
-        console.log("updated restaurant: ", { id: id, ...restaurant });
-        result(null, { id: id, ...restaurant });
+        result(null, {restaurant});
       }
     );
   };

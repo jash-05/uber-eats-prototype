@@ -85,7 +85,7 @@ exports.authenticate = (req, res) => {
               user_type: "restaurant",
               id: data.restaurant_ID
           }
-          res.cookie('restaurant',data.restaurant_ID,{maxAge: 900000, httpOnly: false, path : '/'});
+          res.cookie('restaurant',data.restaurant_ID,{maxAge: 9000000, httpOnly: false, path : '/'});
           res.send(data)
         };
     });
@@ -113,17 +113,16 @@ exports.update = (req, res) => {
             message: "Content can not be empty!"
         });
     }
-
     Restaurant.updateById(
-        req.params.restaurantId, new Restaurant(req.body), (err, data) => {
+        req.body, (err, data) => {
             if (err) {
                 if (err.kind === "not_found") {
                     res.status(404).send({
-                        message: `Not found restaurant with id: ${req.params.restaurantId}`
+                        message: `Not found restaurant with id: ${req.body.restaurant_ID}`
                     });
                 } else {
                     res.status(500).send({
-                        message: `Error updating restaurant with id: ${req.params.restaurantId}`
+                        message: `Error updating restaurant with id: ${req.body.restaurant_ID}`
                     });
                 }
             } else res.send(data)

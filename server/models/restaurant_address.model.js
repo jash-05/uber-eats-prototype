@@ -37,4 +37,25 @@ RestaurantAddress.getAddressForRestaurant = (restaurant_ID, result) => {
   });
 };
 
+RestaurantAddress.updateById = (restaurant, result) => {
+  conn.query(
+    "UPDATE restaurant_addresses SET line1 = ?, line2 = ?, city = ?, state_name = ?, zipcode = ? WHERE restaurant_ID = ?",
+    [restaurant.line1, restaurant.line2, restaurant.city, restaurant.state_name, parseInt(restaurant.zipcode), restaurant.restaurant_ID],
+    (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(null, err);
+        return;
+      }
+
+      if (res.affectedRows == 0) {
+        // not found restaurant with the id
+        result({ kind: "not_found" }, null);
+        return;
+      }
+      result(null, {restaurant});
+    }
+  );
+};
+
 module.exports = RestaurantAddress;

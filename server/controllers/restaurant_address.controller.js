@@ -39,3 +39,26 @@ exports.findOne = (req, res) => {
       else res.send(data);
     });
   };
+
+exports.update = (req, res) => {
+    if (!req.body) {
+        res.status(400).send({
+            message: "Content can not be empty!"
+        });
+    }
+    RestaurantAddress.updateById(
+        req.body, (err, data) => {
+            if (err) {
+                if (err.kind === "not_found") {
+                    res.status(404).send({
+                        message: `Not found restaurant with id: ${req.body.restaurant_ID}`
+                    });
+                } else {
+                    res.status(500).send({
+                        message: `Error updating restaurant with id: ${req.body.restaurant_ID}`
+                    });
+                }
+            } else res.send(data)
+        }
+    );
+};

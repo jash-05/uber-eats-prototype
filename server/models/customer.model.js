@@ -2,13 +2,15 @@ const conn = require("./db.js");
 
 // constructor
 const Customer = function (customer) {
+  this.nickname = customer.nickname,
   this.first_name = customer.first_name,
   this.last_name = customer.last_name,
+  this.about = customer.about,
   this.email_id = customer.email_id,
   this.pass = customer.pass,
   this.phone_number = customer.phone_number,
   this.dob = customer.dob,
-  this.city = customer.city
+  this.profile_picture = customer.profile_picture
 };
 
 Customer.create = (newCustomer, result) => {
@@ -44,7 +46,7 @@ Customer.authenticateCreds = (email_id, pass, result) => {
 };
 
 Customer.findById = (customerId, result) => {
-  conn.query(`SELECT * FROM customers WHERE customer_ID = ${customerId}`, (err, res) => {
+  conn.query(`SELECT * FROM customers AS c INNER JOIN customer_addresses AS a ON c.customer_ID = a.customer_ID WHERE c.customer_ID = ${customerId}`, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(err, null);
@@ -75,10 +77,10 @@ Customer.getAll = result => {
   });
 };
 
-Customer.updateById = (id, customer, result) => {
+Customer.updateById = (customer, result) => {
   conn.query(
-    "UPDATE customers SET email = ?, name = ?, active = ? WHERE id = ?",
-    [customer.email, customer.name, customer.active, id],
+    "UPDATE customers SET nickname = ?, first_name = ?, last_name = ?, about = ?, phone_number = ?, dob = ?, profile_picture = ? WHERE customer_ID = ?",
+    [customer.nickname, customer.first_name, customer.last_name, customer.about, customer.phone_number, customer.dob, customer.profile_picture, customer.customer_ID],
     (err, res) => {
       if (err) {
         console.log("error: ", err);
@@ -91,9 +93,7 @@ Customer.updateById = (id, customer, result) => {
         result({ kind: "not_found" }, null);
         return;
       }
-
-      console.log("updated customer: ", { id: id, ...customer });
-      result(null, { id: id, ...customer });
+      result(null, {customer });
     }
   );
 };

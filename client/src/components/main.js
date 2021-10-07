@@ -10,6 +10,7 @@ import RestaurantDetails from './restaurant.details';
 import Checkout from './checkout';
 import Navbar from './navbar';
 import RestaurantProfile from './restaurant.profile';
+import CustomerProfile from './customer.profile';
 
 //Create a Main Component
 class Main extends Component {
@@ -28,6 +29,7 @@ class Main extends Component {
                 <Route path="/checkout/:restaurant_ID" component={Checkout}/>
                 <Route path="/navbar" component={Navbar}/>
                 <Route path="/restaurantProfile" component={RestaurantProfile}/>
+                <Route path="/customerProfile" component={CustomerProfile}/>
             </div>
         )
     }

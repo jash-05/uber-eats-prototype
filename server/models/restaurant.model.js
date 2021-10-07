@@ -39,7 +39,7 @@ Restaurant.getAll = (query_string, result) => {
             return;
         }
 
-        console.log("restaurants: ", res);
+        // console.log("restaurants: ", res);
         result(null, res)
     });
 };

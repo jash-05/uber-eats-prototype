@@ -41,6 +41,42 @@ exports.findAll = (req, res) => {
     });
   };
 
+  exports.getCity = (req, res) => {
+    CustomerAddress.getCityFromCustomerID(req.params.customer_ID, (err, data) => {
+      if (err)
+        res.status(500).send({
+          message: err.message || "Some error occurred while retrieving the city name"
+        });
+      else {
+        res.send(data[0])
+      };
+    });
+  };
+
+
+exports.update = (req, res) => {
+    if (!req.body) {
+        res.status(400).send({
+            message: "Content can not be empty!"
+        });
+    }
+    CustomerAddress.updateById(
+        req.body, (err, data) => {
+            if (err) {
+                if (err.kind === "not_found") {
+                    res.status(404).send({
+                        message: `Not found restaurant with id: ${req.body.restaurant_ID}`
+                    });
+                } else {
+                    res.status(500).send({
+                        message: `Error updating restaurant with id: ${req.body.restaurant_ID}`
+                    });
+                }
+            } else res.send(data)
+        }
+    );
+};
+
 // Delete a Favourite with the specified customer_ID and restaurant_ID in the request
 exports.delete = (req, res) => {
     CustomerAddress.removeAddressForCustomer(req.params.customer_ID, req.params.address_type,(err, data) => {

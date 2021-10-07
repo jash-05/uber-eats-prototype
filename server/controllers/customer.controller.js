@@ -93,25 +93,23 @@ exports.findOne = (req, res) => {
 
 // Update a Customer identified by the customerId in the request
 exports.update = (req, res) => {
-    // Validate Request
+  console.log("Updating customer with following info:")
+  console.log(req.body)
     if (!req.body) {
       res.status(400).send({
         message: "Content can not be empty!"
       });
     }
-  
-    Customer.updateById(
-      req.params.customerId,
-      new Customer(req.body),
+    Customer.updateById(req.body,
       (err, data) => {
         if (err) {
           if (err.kind === "not_found") {
             res.status(404).send({
-              message: `Not found Customer with id ${req.params.customerId}.`
+              message: `Not found Customer with id ${req.body.customerId}.`
             });
           } else {
             res.status(500).send({
-              message: "Error updating Customer with id " + req.params.customerId
+              message: "Error updating Customer with id " + req.body.customerId
             });
           }
         } else res.send(data);

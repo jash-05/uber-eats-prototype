@@ -77,7 +77,7 @@ class CustomerLogin extends Component{
         console.log('RENDERING')
         let redirectVar = null;
         if(cookie.load('customer')){
-            redirectVar = <Redirect to= "/dashboard"/>
+            redirectVar = <Redirect to= "/customerProfile"/>
         } else {
             redirectVar = <Redirect to="/customerLogin"/>
         }

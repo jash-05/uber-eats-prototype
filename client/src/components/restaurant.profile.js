@@ -294,7 +294,6 @@ class RestaurantProfile extends Component{
         e.preventDefault();
 
         await this.uploadImageToS3()
-
         const restaurant_data = {
             restaurant_ID: this.state.restaurant_ID,
             restaurant_name : this.state.restaurant_name,
@@ -456,7 +455,6 @@ class RestaurantProfile extends Component{
     }
     render(){
         console.log("Rendering")
-        console.log(this.state.filteredOrders)
         let redirectVar = null;
         if (!cookie.load('restaurant')){
             redirectVar = <Redirect to="/restaurantLogin"/>

@@ -20,12 +20,14 @@ class Dashboard extends Component{
         //maintain the state required for this component
         this.state = {
             fetchedRestaurants: [],
+            location: "",
             vegetarian: false,
             non_vegetarian: false,
             vegan: false,
             delivery: true,
             pickup: false,
-            authFlag : false
+            authFlag : false,
+            city: ""
         }
         //Bind the handlers to this class
         this.vegetarianChangeHandler = this.vegetarianChangeHandler.bind(this);
@@ -116,21 +118,37 @@ class Dashboard extends Component{
             console.error(err);
         }
     }
-    fetchRestaurants = async (data) => {
-        let restaurantData = [] 
-        console.log("printing data");
-        console.log(data);
+    getCityFromCustomerID = async (customer_ID) => {
         try {
-            const response = await axios.get('http://localhost:3001/restaurants', {params:data})
+            console.log('Fetching city')
+            const response = await axios.get(`http://localhost:3001/city/${customer_ID}`);
+            this.setState({
+                city: response.data.city
+            })
+            console.log('Fetched city: ', response.data.city)
+        } catch (err) {
+            console.error(err);
+        }
+    }
+    fetchRestaurants = async (data) => {
+        if (cookie.load('customer') && !(this.state.city)) {
+            await this.getCityFromCustomerID(cookie.load('customer'))
+        }
+        let restaurantData = [] 
+        try {
+            let payload = {...data, city: this.state.city}
+            const response = await axios.get('http://localhost:3001/restaurants', {params: payload})
             console.log("Status Code : ",response.status);
             if(response.status === 200){
                 console.log("Successful request");
+                console.log('Response')
                 console.log(response.data);
                 for (let i=0;i < response.data.length; i++){
                     restaurantData.push({
                         'restaurant_ID': response.data[i].restaurant_ID,
                         'restaurant_name': response.data[i].restaurant_name,
-                        'cover_image': response.data[i].cover_image
+                        'cover_image': response.data[i].cover_image,
+                        'city': response.data[i].city
                     });
                     console.log(restaurantData)
                 }
@@ -150,14 +168,14 @@ class Dashboard extends Component{
         console.log(this.state.fetchedRestaurants)
         const createCard = card => {
             return (
-                <Col sm={3} className="ml-3 mt-3"  style={{ width: '15rem' }}>
+                <Col sm={3} className="ml-3 mt-3"  style={{ width: '25rem'}}>
                 <Link to={`/restaurants/${card.restaurant_ID}`} style={{textDecoration: 'none'}}>
                     <Card>
                     <Card.Img variant="top" src={card.cover_image} />
                     <Card.Body>
                         <Card.Title className="text-dark">{card.restaurant_name}</Card.Title>
-                        <Card.Text>
-                              {/* {card.restaurant_address} */}
+                        <Card.Text className="text-secondary">
+                              {card.city}
                         </Card.Text>
                     </Card.Body>
                     </Card>
@@ -170,7 +188,7 @@ class Dashboard extends Component{
         let vegan_btn_variant = this.state.vegan ? "dark" : "light";
 
         return(
-            <Container>
+            <Container fluid>
                 <Row className="m-4">
                     <Col xs={3} >
                         <Container className="my-5">

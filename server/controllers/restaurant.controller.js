@@ -49,14 +49,19 @@ exports.findAll = (req, res) => {
         }
     }
     let food_option_string = `${selected_food_options.join(" OR ")}`;
-    let query_string = "SELECT * FROM restaurants WHERE";
+    let query_string = "SELECT * FROM restaurants AS r INNER JOIN restaurant_addresses AS a ON r.restaurant_ID = a.restaurant_ID WHERE";
     if (food_option_string){
-        query_string = `${query_string} (${food_option_string}) AND (${selected_delivery_option}=1);`;
+        query_string = `${query_string} (${food_option_string}) AND (${selected_delivery_option}=1)`;
     } else {
-        query_string = `${query_string} ${selected_delivery_option}=1;`;
+        query_string = `${query_string} ${selected_delivery_option}=1`;
     }
     console.log(query_string);
-    Restaurant.getAll(query_string, (err, data) => {
+    let query_string_with_location = ""
+    query_string_with_location += `${query_string} AND city = "${req.query.city}"`
+    query_string_with_location += " UNION "
+    query_string_with_location += `${query_string} AND NOT city = "${req.query.city}"`
+    console.log(query_string_with_location)
+    Restaurant.getAll(query_string_with_location,(err, data) => {
         if (err)
             res.status(500).send({
                 message:

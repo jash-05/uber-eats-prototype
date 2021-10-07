@@ -170,7 +170,8 @@ class CustomerRegister extends Component{
                         address_line_2: this.state.address_line_2,
                         city: this.state.city,
                         state: this.state.state,
-                        zip: this.state.zip
+                        zip: this.state.zip,
+                        address_type: "primary"
                     }
                     console.log(address_data);
                     axios.post('http://localhost:3001/customerAddress', address_data)

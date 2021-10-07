@@ -37,6 +37,39 @@ CustomerAddress.getAddressesForCustomer = (customer_ID, result) => {
   });
 };
 
+CustomerAddress.getCityFromCustomerID = (customer_ID, result) => {
+  conn.query(`SELECT city FROM customer_addresses WHERE address_type="primary" AND customer_ID = ${customer_ID}`, (err, res) => {
+    if (err) {
+      console.log(`Error while trying to fetch addresses for customer_ID ${customer_ID}: ${err}`);
+      result(null, err);
+      return;
+    }
+    console.log(`Fetched addresses for customer ${customer_ID}: ${res}`);
+    result(null, res);
+  });
+};
+
+CustomerAddress.updateById = (customer, result) => {
+  conn.query(
+    "UPDATE customer_addresses SET line1 = ?, line2 = ?, city = ?, state_name = ?, zipcode = ? WHERE customer_ID = ?",
+    [customer.line1, customer.line2, customer.city, customer.state_name, parseInt(customer.zipcode), customer.customer_ID],
+    (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(null, err);
+        return;
+      }
+
+      if (res.affectedRows == 0) {
+        // not found restaurant with the id
+        result({ kind: "not_found" }, null);
+        return;
+      }
+      result(null, {customer: customer});
+    }
+  );
+};
+
 // Delete function
 CustomerAddress.removeAddressForCustomer = (customer_ID, address_type, result) => {
     conn.query(`DELETE FROM customer_addresses WHERE customer_ID = ${customer_ID} AND address_type = "${address_type}"`, (err, res) => {

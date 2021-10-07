@@ -38,10 +38,12 @@ exports.findAll = (req, res) => {
 
 // Delete a Favourite with the specified customer_ID and restaurant_ID in the request
 exports.delete = (req, res) => {
+    console.log("Deleting favourite")
+    console.log(req)
     Favourite.removeRestaurantFromFavourites(req.params.customer_ID, req.params.restaurant_ID,(err, data) => {
       if (err) {
         if (err.err_type === "not_found") {
-          res.status(404).send({
+          res.status(200).send({
             message: `Could not find restaurant ${req.params.restaurant_ID} in favourites of customer ${req.params.customer_ID}.`
           });
         } else {

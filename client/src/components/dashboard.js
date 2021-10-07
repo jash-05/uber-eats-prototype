@@ -9,6 +9,9 @@ import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import BootstrapSwitchButton from 'bootstrap-switch-button-react'
 import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart } from '@fortawesome/free-solid-svg-icons';
+import HeartCheckbox from 'react-heart-checkbox';
 
 
 // Define a Login Component
@@ -130,13 +133,33 @@ class Dashboard extends Component{
             console.error(err);
         }
     }
+    getFavouritesForCustomer = async (customer_ID) => {
+        try {
+            console.log('Fetching customer favourites')
+            const response = await axios.get(`http://localhost:3001/favourites/${customer_ID}`);
+            console.log(response.data);
+            let favourite_restaurants = []
+            for (let i=0;i<response.data.length;i++){
+                favourite_restaurants.push(response.data[i].restaurant_ID);
+            }
+            return favourite_restaurants
+        } catch (err) {
+            console.error(err);
+            return []
+        }
+    }
     fetchRestaurants = async (data) => {
         if (cookie.load('customer') && !(this.state.city)) {
             await this.getCityFromCustomerID(cookie.load('customer'))
         }
+        let favourite_restaurants = [];
+        if (cookie.load('customer')){
+            favourite_restaurants = await this.getFavouritesForCustomer(cookie.load('customer'))
+        }
+        console.log(favourite_restaurants)
         let restaurantData = [] 
         try {
-            let payload = {...data, city: this.state.city}
+            let payload = {...data, city: this.state.city, customer_ID: cookie.load('customer')}
             const response = await axios.get('http://localhost:3001/restaurants', {params: payload})
             console.log("Status Code : ",response.status);
             if(response.status === 200){
@@ -148,7 +171,8 @@ class Dashboard extends Component{
                         'restaurant_ID': response.data[i].restaurant_ID,
                         'restaurant_name': response.data[i].restaurant_name,
                         'cover_image': response.data[i].cover_image,
-                        'city': response.data[i].city
+                        'city': response.data[i].city,
+                        'favourite': favourite_restaurants.includes(response.data[i].restaurant_ID)
                     });
                     console.log(restaurantData)
                 }
@@ -164,22 +188,65 @@ class Dashboard extends Component{
             console.error(err);
         }
     }
+    favouritesHandler = async (e) => {
+        let restaurants = []
+        for(let i=0;i<this.state.fetchedRestaurants.length;i++){
+            if ((this.state.fetchedRestaurants[i].restaurant_ID === parseInt(e.target.id)) && (cookie.load('customer'))){
+                try {
+                    axios.defaults.withCredentials = true;
+                    if (!this.state.fetchedRestaurants[i].favourite){
+                        let data = {
+                            customer_ID: cookie.load('customer'),
+                            restaurant_ID: this.state.fetchedRestaurants[i].restaurant_ID
+                        }
+                        console.log(data)
+                        console.log('Sending request to add favourite restaurant')
+                        const response = await axios.post('http://localhost:3001/favourites', data)
+                        console.log(response.data);                        
+                    } else {
+                        console.log('Sending request to delete favourite restaurant')
+                        const response = await axios.delete(`http://localhost:3001/favourites/${cookie.load('customer')}/${this.state.fetchedRestaurants[i].restaurant_ID}`)
+                        console.log(response.data)
+                    }
+                    restaurants.push({...this.state.fetchedRestaurants[i], favourite: !this.state.fetchedRestaurants[i].favourite})
+                } catch (err) {
+                    console.error(err);
+                }
+            } else {
+                restaurants.push(this.state.fetchedRestaurants[i])
+            }
+        }
+        this.setState({
+            fetchedRestaurants: restaurants
+        })
+        console.log(restaurants)
+    }
     render(){
-        console.log(this.state.fetchedRestaurants)
+        // console.log(this.state.fetchedRestaurants)
         const createCard = card => {
             return (
                 <Col sm={3} className="ml-3 mt-3"  style={{ width: '25rem'}}>
-                <Link to={`/restaurants/${card.restaurant_ID}`} style={{textDecoration: 'none'}}>
                     <Card>
+                    <Link to={`/restaurants/${card.restaurant_ID}`} style={{textDecoration: 'none'}}>
                     <Card.Img variant="top" src={card.cover_image} />
+                    </Link>
                     <Card.Body>
-                        <Card.Title className="text-dark">{card.restaurant_name}</Card.Title>
-                        <Card.Text className="text-secondary">
-                              {card.city}
-                        </Card.Text>
+                            <Row>
+                            
+                            <Col xs={10}>
+                            <Link to={`/restaurants/${card.restaurant_ID}`} style={{textDecoration: 'none'}}>
+                                <Card.Title className="text-dark">{card.restaurant_name}</Card.Title>
+                                <Card.Text className="text-secondary">
+                                    {card.city}
+                                </Card.Text>
+                                </Link>
+                            </Col>
+                            <Col xs={2}>
+                                <i id={card.restaurant_ID} className={card.favourite ? "heart fa fa-heart fa-2x" : "heart fa fa-heart-o fa-2x"} onClick={this.favouritesHandler} style={{color:"red"}}></i>
+                            </Col>
+                            </Row>
                     </Card.Body>
                     </Card>
-                </Link>
                   </Col>
             )
         }
@@ -189,6 +256,7 @@ class Dashboard extends Component{
 
         return(
             <Container fluid>
+                <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous"></link>
                 <Row className="m-4">
                     <Col xs={3} >
                         <Container className="my-5">

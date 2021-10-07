@@ -77,7 +77,7 @@ class RestaurantLogin extends Component{
         console.log('RENDERING')
         let redirectVar = null;
         if(cookie.load('restaurant')){
-            redirectVar = <Redirect to= "/dashboard"/>
+            redirectVar = <Redirect to= "/restaurantProfile"/>
         } else {
             redirectVar = <Redirect to="/restaurantLogin"/>
         }

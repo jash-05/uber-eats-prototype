@@ -12,11 +12,11 @@ exports.create = (req, res) => {
     // Create object of input variables
     let address_dict = {
         'customer_ID': req.body.customer_ID,
-        'line1': req.body.line1,
-        'line2': req.body.line2,
+        'line1': req.body.address_line_1,
+        'line2': req.body.address_line_2,
         'city': req.body.city,
-        'state_name': req.body.state_name,
-        'zipcode': req.body.zipcode,
+        'state_name': req.body.state,
+        'zipcode': req.body.zip,
         'address_type': req.body.address_type
     };
 

@@ -16,6 +16,8 @@ exports.create = (req, res) => {
         pass: req.body.pass,
         country: req.body.country,
         phone_number: req.body.phone_number,
+        dob: req.body.dob,
+        profile_picture: req.body.profile_picture
     };
 
     console.log(customer_dict);
@@ -61,7 +63,14 @@ exports.authenticate = (req, res) => {
           message: "Error retrieving Customer with email_id " + req.body.email_id
         });
       }
-    } else res.send(data);
+    } else {
+      req.session.user = {
+          user_type: "customer",
+          id: data.customer_ID
+      }
+      res.cookie('customer',data.customer_ID,{maxAge: 9000000, httpOnly: false, path : '/'});
+      res.send(data)
+    };
   });
 };
 

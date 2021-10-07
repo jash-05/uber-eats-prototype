@@ -57,7 +57,7 @@ class CustomerLogin extends Component{
         //set the with credentials to true
         axios.defaults.withCredentials = true;
         //make a post request with the user data
-        axios.post('http://localhost:3001/login',data)
+        axios.post('http://localhost:3001/customer',data)
             .then(response => {
                 console.log("Status Code : ",response.status);
                 if(response.status === 200){
@@ -76,10 +76,10 @@ class CustomerLogin extends Component{
     render(){
         console.log('RENDERING')
         let redirectVar = null;
-        if(cookie.load('cookie')){
-            redirectVar = <Redirect to= "/"/>
+        if(cookie.load('customer')){
+            redirectVar = <Redirect to= "/dashboard"/>
         } else {
-            redirectVar = <Redirect to="/Customerlogin"/>
+            redirectVar = <Redirect to="/customerLogin"/>
         }
         return(
             <div>

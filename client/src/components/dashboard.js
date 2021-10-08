@@ -222,6 +222,7 @@ class Dashboard extends Component{
         console.log(restaurants)
     }
     render(){
+        sessionStorage.setItem("order_type", (this.state.delivery ? "delivery" : "pickup"));
         // console.log(this.state.fetchedRestaurants)
         const createCard = card => {
             return (

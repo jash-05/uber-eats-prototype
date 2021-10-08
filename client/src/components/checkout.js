@@ -22,7 +22,7 @@ class CheckoutOrder extends Component{
         //maintain the state required for this component
         this.state = {
             restaurant_ID: props.match.params.restaurant_ID,
-            customer_ID: 13,
+            customer_ID: cookie.load('customer'),
             restaurant_name: "",
             selectedDishes: [],
             customer_addresses: [],
@@ -150,7 +150,8 @@ class CheckoutOrder extends Component{
             let data = {
                 'order_ID': this.state.order_info.order_ID,
                 'address_ID': this.state.selected_address_ID,
-                'total_amount': this.state.order_info.total_amount
+                'total_amount': this.state.order_info.total_amount,
+                'order_type': sessionStorage.getItem("order_type")
             }
             const response = await axios.post('http://localhost:3001/placeOrder', data);
             console.log("Status Code: ", response.status);

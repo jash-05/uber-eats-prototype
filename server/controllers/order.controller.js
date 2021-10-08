@@ -1,5 +1,6 @@
 const e = require("express");
 const Order = require("../models/order.model.js");
+const MOMENT= require( 'moment' );
 
 exports.getOrder = (req, res) => {
     console.log(req.query);
@@ -123,10 +124,13 @@ exports.fetchOrdersForRestaurant = (req, res) => {
 exports.placeOrder = (req, res) => {
     console.log("Placing order with the following params");
     console.log(req.body)
+    let current_timestamp = MOMENT().format( 'YYYY-MM-DD  HH:mm:ss.000' );
     let order_dict = {
         order_ID: req.body.order_ID,
         total_amount: req.body.total_amount,
-        address_ID: req.body.address_ID
+        address_ID: req.body.address_ID,
+        order_placed_timestamp: current_timestamp,
+        order_type: req.body.order_type
     }
     Order.placeOrder(order_dict, (err, data) => {
         if(err){

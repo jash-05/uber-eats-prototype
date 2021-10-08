@@ -126,7 +126,7 @@ Order.getAllOrdersByRestaurant = (restaurant_ID, result) => {
 }
  
 Order.placeOrder = (orderDetails, result) => {
-    conn.query(`UPDATE orders SET total_amount=${orderDetails.total_amount}, address_ID= ${orderDetails.address_ID}, order_status="placed" WHERE order_ID=${orderDetails.order_ID};`, (err, res) => {
+    conn.query(`UPDATE orders SET total_amount = ${orderDetails.total_amount}, address_ID = ${orderDetails.address_ID}, order_status = "placed", order_placed_timestamp = "${orderDetails.order_placed_timestamp}", order_type="${orderDetails.order_type}" WHERE order_ID=${orderDetails.order_ID};`, (err, res) => {
         if (err) {
             console.log("error: ", err);
             result(null, err);

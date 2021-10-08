@@ -20,7 +20,7 @@ class RestaurantDetails extends Component{
         //maintain the state required for this component
         this.state = {
             restaurant_ID: props.match.params.restaurant_ID,
-            customer_ID: 13,
+            customer_ID: cookie.load('customer'),
             restaurant_name: "",
             short_address: "",
             cover_image: "",
@@ -171,20 +171,26 @@ class RestaurantDetails extends Component{
                 console.log("Successful request");
                 console.log(response.data);
                 let prev_state = this.state.fetchedDishes
-                let new_state = []
-                for (let i=0; i<prev_state.length;i++){
-                    let matchedDish = response.data.dishes.filter(x => x.dish_ID === prev_state[i].dish_ID)
-                    if(matchedDish.length>0){
-                        prev_state[i].quantity = matchedDish[0].quantity
+                if (response.data.dishes){
+                    let new_state = []
+                    for (let i=0; i<prev_state.length;i++){
+                        let matchedDish = response.data.dishes.filter(x => x.dish_ID === prev_state[i].dish_ID)
+                        if(matchedDish.length>0){
+                            prev_state[i].quantity = matchedDish[0].quantity
+                        }
+                        new_state.push(prev_state[i])
                     }
-                    new_state.push(prev_state[i])
+                    let order_info = response.data
+                    delete order_info["dishes"]
+                    this.setState({
+                        order_info: order_info,
+                        fetchedDishes: new_state
+                    });
+                } else {
+                    this.setState({
+                        order_info: response.data
+                    })
                 }
-                let order_info = response.data
-                delete order_info["dishes"]
-                this.setState({
-                    order_info: order_info,
-                    fetchedDishes: new_state
-                });
             } else {
                 console.log("Unsuccessful request");
                 console.log(response);
@@ -231,7 +237,9 @@ class RestaurantDetails extends Component{
         })
     }
     render(){
-        console.log("Rendering")
+        console.log("Rendering");
+        console.log(this.state.order_info)
+        console.log(this.state.fetchedDishes)
         const createOrderItemRow = row => {
             return (
                 <Row>

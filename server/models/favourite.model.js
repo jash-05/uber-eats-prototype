@@ -21,7 +21,16 @@ Favourite.createFavouriteForCustomer = (newFavourite, result) => {
 
 // Read function (with condition)
 Favourite.getFavouritesForCustomer = (customer_ID, result) => {
-  conn.query(`SELECT * FROM favourites WHERE customer_ID = ${customer_ID}`, (err, res) => {
+  conn.query(`
+    SELECT f.restaurant_ID, r.restaurant_name, r.cover_image, a.city 
+    FROM favourites as f 
+    LEFT JOIN restaurants as r 
+      ON f.restaurant_ID = r.restaurant_ID
+    LEFT JOIN restaurant_addresses AS a
+      ON f.restaurant_ID = a.restaurant_ID
+    WHERE f.customer_ID = ${customer_ID};
+  `,
+  (err, res) => {
     if (err) {
       console.log(`Error while trying to fetch favourites for customer_ID ${customer_ID}: ${err}`);
       result(null, err);

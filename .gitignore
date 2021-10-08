@@ -1,0 +1,6 @@
+server/node_modules
+server/models.js
+server/resources/images
+client/node_modules
+client/src/config
+python_tricks.py

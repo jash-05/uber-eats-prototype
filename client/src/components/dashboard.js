@@ -202,7 +202,7 @@ class Dashboard extends Component{
                         console.log(data)
                         console.log('Sending request to add favourite restaurant')
                         const response = await axios.post('http://localhost:3001/favourites', data)
-                        console.log(response.data);                        
+                        console.log(response.data);
                     } else {
                         console.log('Sending request to delete favourite restaurant')
                         const response = await axios.delete(`http://localhost:3001/favourites/${cookie.load('customer')}/${this.state.fetchedRestaurants[i].restaurant_ID}`)

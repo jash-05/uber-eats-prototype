@@ -9,12 +9,13 @@ import NavDropdown from 'react-bootstrap/NavDropdown'
 import Image from 'react-bootstrap/Image';
 import Container from 'react-bootstrap/Container';
 import Offcanvas from 'react-bootstrap/Offcanvas';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import cookie from 'react-cookies';
 import axios from 'axios';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import CloseButton from 'react-bootstrap/CloseButton';
+import {withRouter} from 'react-router-dom';
 
 // Define a Login Component
 class DashboardNavbar extends Component{
@@ -55,6 +56,12 @@ class DashboardNavbar extends Component{
         this.setState({
             showSideMenu: !this.state.showSideMenu
         })
+    }
+    searchHandler = async (e) => {
+        e.preventDefault();
+        console.log(e.target.firstChild.value);
+        this.props.history.push(`/searchResults/${e.target.firstChild.value}`)
+        window.location.reload(false);
     } 
     render(){
         return(
@@ -103,7 +110,7 @@ class DashboardNavbar extends Component{
                         </Link>
                     </Navbar.Brand>
                     <Nav>
-                        <Form className="d-flex mx-5">
+                        <Form className="d-flex mx-5" onSubmit={this.searchHandler}>
                             <FormControl
                                 type="search"
                                 size="md"
@@ -122,4 +129,4 @@ class DashboardNavbar extends Component{
     }
 }
 //export Login Component
-export default DashboardNavbar;
+export default withRouter(DashboardNavbar);

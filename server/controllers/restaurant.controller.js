@@ -1,4 +1,6 @@
+const e = require("express");
 const Restaurant = require("../models/restaurant.model.js");
+const RestaurantAddress = require("../models/restaurant_address.model.js");
 
 exports.create = (req, res) => {
     if (!req.body) {
@@ -70,6 +72,56 @@ exports.findAll = (req, res) => {
         else res.send(data);
     });
 };
+
+exports.findSearchedItems = (req, res) => {
+    console.log(req.query);
+    let query_string_with_location = "";
+    if (req.query.searchQuery.toLowerCase() === "delivery" || req.query.searchQuery.toLowerCase() === "pickup") {
+        let query_string = "SELECT * FROM restaurants AS r INNER JOIN restaurant_addresses AS a ON r.restaurant_ID = a.restaurant_ID WHERE ";
+        if (req.query.searchQuery.toLowerCase() === "delivery") {
+            query_string += "delivery = 1"
+        } else {
+            query_string += "pickup = 1"
+        }
+        query_string_with_location += `${query_string} AND city = "${req.query.city}"`
+        query_string_with_location += " UNION "
+        query_string_with_location += `${query_string} AND NOT city = "${req.query.city}";`
+    } else {
+        let query_string = 
+        `
+            SELECT 
+            DISTINCT a.restaurant_ID, a.restaurant_name, a.cover_image, a.city   
+            FROM    
+                ( SELECT r.restaurant_ID, r.restaurant_name, r.cover_image, ra.city, d.dish_name    
+                    FROM restaurants AS r
+                    INNER JOIN restaurant_addresses AS ra
+                        ON r.restaurant_ID = ra.restaurant_ID
+                    LEFT JOIN dishes AS d      
+                        ON r.restaurant_ID = d.restaurant_ID   
+                ) AS a     
+            WHERE    
+            (a.restaurant_name LIKE '%${req.query.searchQuery}%'   
+            OR a.dish_name LIKE '%${req.query.searchQuery}%')
+        `
+        query_string_with_location += `${query_string} AND city = "${req.query.city}"`
+        query_string_with_location += " UNION "
+        query_string_with_location += `${query_string} AND NOT city = "${req.query.city}";`
+    }
+    console.log(query_string_with_location);
+    // res.send(query_string_with_location)
+    // return;
+    Restaurant.getAll(query_string_with_location,(err, data) => {
+        if (err)
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while retrieving restaurants!"
+            });
+        else {
+            console.log(data);
+            res.send(data);
+        };
+    });
+}
 
 // Authenticate a single Restaurant with email_ID and password
 exports.authenticate = (req, res) => {

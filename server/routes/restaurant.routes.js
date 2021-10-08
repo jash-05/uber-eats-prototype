@@ -11,5 +11,5 @@ module.exports = app => {
 
     app.put("/restaurants/:restaurantId", restaurants.update);
 
-    // app.get('/searchRestaurants/:searchQuery', restaurants.findSearchedItems);
+    app.get('/searchRestaurants', restaurants.findSearchedItems);
 };

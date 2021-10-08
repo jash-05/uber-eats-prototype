@@ -10,4 +10,6 @@ module.exports = app => {
     app.get("/restaurants/:restaurantId", restaurants.findOne);
 
     app.put("/restaurants/:restaurantId", restaurants.update);
+
+    // app.get('/searchRestaurants/:searchQuery', restaurants.findSearchedItems);
 };

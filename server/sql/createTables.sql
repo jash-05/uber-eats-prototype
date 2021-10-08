@@ -8,7 +8,8 @@ CREATE TABLE customers (
     last_name VARCHAR(30),
     email_id VARCHAR(50),
     pass VARCHAR(50),
-    phone_number INT,
+    country VARCHAR(50),
+    phone_number VARCHAR(20),
     about VARCHAR(200) DEFAULT "",
     profile_picture VARCHAR(100) DEFAULT "",
     favourites VARCHAR(100) DEFAULT "",
@@ -23,22 +24,26 @@ CREATE TABLE restaurants (
     owner_name VARCHAR(50),
     email_id VARCHAR(50),
     pass VARCHAR(50),
-    phone_number INT,
-    location_ID INT,
-    address_ID INT,
-    about VARCHAR(200),
-    pictures VARCHAR(500),
-    timing_ID INT,
-    food_types VARCHAR(100)
+    country VARCHAR(50),
+    phone_number VARCHAR(20),
+    vegetarian BOOLEAN,
+    non_vegetarian BOOLEAN,
+    vegan BOOLEAN,
+    delivery BOOLEAN,
+    pickup BOOLEAN,
+    cover_image VARCHAR(500),
+    about VARCHAR(1000),
+    opening_time VARCHAR(20),
+    closing_time VARCHAR(20)
 );
 
-CREATE TABLE locations (
-    location_ID INT PRIMARY KEY AUTO_INCREMENT,
-    location_name VARCHAR(50),
-    state_name VARCHAR(50)
-);
+-- CREATE TABLE locations (
+--     location_ID INT PRIMARY KEY AUTO_INCREMENT,
+--     location_name VARCHAR(50),
+--     state_name VARCHAR(50)
+-- );
 
-CREATE TABLE addresses (
+CREATE TABLE customer_addresses (
     address_ID INT PRIMARY KEY AUTO_INCREMENT,
     customer_ID INT,
     line1 VARCHAR(100),
@@ -46,15 +51,26 @@ CREATE TABLE addresses (
     city VARCHAR(50),
     state_name VARCHAR(50),
     zipcode INT,
-    title VARCHAR(100)
+    address_type VARCHAR(100)
+);
+
+CREATE TABLE restaurant_addresses (
+    address_ID INT PRIMARY KEY AUTO_INCREMENT,
+    restaurant_ID INT,
+    line1 VARCHAR(100),
+    line2 VARCHAR (100) DEFAULT "",
+    city VARCHAR(50),
+    state_name VARCHAR(50),
+    zipcode INT
 );
 
 CREATE TABLE orders (
     order_ID INT PRIMARY KEY AUTO_INCREMENT,
     restaurant_ID INT,
     customer_ID INT,
-    location_ID INT,
-    delivery_status VARCHAR(50)
+    address_ID INT,
+    order_status VARCHAR(50),
+    total_amount VARCHAR(10)
 );
 
 CREATE TABLE order_details (
@@ -68,12 +84,11 @@ CREATE TABLE dishes (
     dish_ID INT PRIMARY KEY AUTO_INCREMENT,
     dish_name VARCHAR(50),
     category_ID INT,
-    main_ingredients VARCHAR(70),
+    main_ingredients VARCHAR(500),
     restaurant_ID INT,
-    price INT,
-    dish_details VARCHAR(100) DEFAULT "",
-    dish_images VARCHAR(500),
-    food_types VARCHAR(50)
+    price VARCHAR(5),
+    about VARCHAR(100),
+    dish_image VARCHAR(500)
 );
 
 CREATE TABLE favourites (

@@ -1,0 +1,336 @@
+import React, {Component} from 'react';
+import './../App.css';
+import axios from 'axios';
+import cookie from 'react-cookies';
+import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
+import Image from 'react-bootstrap/Image';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Form from 'react-bootstrap/Form';
+import Modal from 'react-bootstrap/Modal';
+import { Link } from 'react-router-dom';
+
+// Define a Login Component
+class RestaurantDetails extends Component{
+    //call the constructor method
+    constructor(props){
+        //Call the constructor of Super class i.e The Component
+        super(props);
+        //maintain the state required for this component
+        this.state = {
+            restaurant_ID: props.match.params.restaurant_ID,
+            customer_ID: 13,
+            restaurant_name: "",
+            short_address: "",
+            cover_image: "",
+            about: "",
+            full_adress: "",
+            fetchedDishes: [],
+            selectedDishes: [],
+            order_info: {},
+            showModal: false
+        }
+        //Bind the handlers to this class
+        this.stateChangeHandler = this.stateChangeHandler.bind(this);
+        this.updateQuantityHandler = this.updateQuantityHandler.bind(this);
+        this.fetchRestaurantDetails = this.fetchRestaurantDetails.bind(this);
+        this.fetchDishes = this.fetchDishes.bind(this);
+        this.fetchCurrentOrder = this.fetchCurrentOrder.bind(this);
+        this.viewOrder = this.viewOrder.bind(this);
+        this.closeModal = this.closeModal.bind(this);
+        this.checkoutOrder = this.checkoutOrder.bind(this);
+    }
+    //Call the Will Mount to set the auth Flag to false
+    componentDidMount(){
+        this.fetchRestaurantDetails();
+        this.fetchDishes();
+        this.fetchCurrentOrder();
+    }
+    stateChangeHandler = (stateName, stateValue) => {
+        console.log(stateName, stateValue)
+        this.setState({
+            stateName: stateValue
+        })
+    }
+    updateQuantityHandler = async (e) => {
+        console.log("Update quantity handler")
+        let to_add = 0
+        if (e.target.innerText === "+"){
+            to_add = 1
+        } else {
+            to_add = -1
+        }
+        let quantity = parseInt(e.target.parentNode.parentNode.childNodes[1].lastChild.data)
+        let dish_ID = parseInt(e.target.parentNode.parentNode.childNodes[1].childNodes[0].childNodes[0].data)
+
+        let data = {
+            order_ID: this.state.order_info.order_ID,
+            dish_ID: dish_ID,
+            quantity: Math.max(quantity + to_add, 0),
+            restaurant_ID: this.state.restaurant_ID,
+            customer_ID: this.state.customer_ID
+        }
+        try {
+            await this.addItemToOrder(data);
+            try {
+                await this.fetchCurrentOrder();
+            } catch (err) {
+                console.error(err);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+    addItemToOrder = async (data) => {
+        try {
+            const response  = await axios.post('http://localhost:3001/addOrderItem', data);
+            console.log("Status Code: ", response.status);
+            if (response.status === 200){
+                console.log("Successful request");
+            } else {
+                console.log("Unsuccessful request");
+                console.log(response);
+            }   
+        } catch (err) {
+            console.error(err)
+        }
+    }
+    fetchRestaurantDetails = async () => {
+        try {
+            const response = await axios.get(`http://localhost:3001/restaurants/${this.state.restaurant_ID}`);
+            console.log("Status Code : ",response.status);
+            if(response.status === 200){
+                console.log("Successful request");
+                console.log(response.data);
+                this.setState({restaurant_name: response.data.restaurant_name});
+                this.setState({
+                    short_address: `${response.data.line1} ${response.data.line2}`
+                });
+                this.setState({
+                    full_address: `${response.data.line1} ${response.data.line2}, ${response.data.city}, ${response.data.state_name} ${response.data.zipcode}`
+                })
+                this.setState({cover_image: response.data.cover_image});
+                this.setState({about: response.data.about});
+                console.log('Cookie status: ', cookie.load('cookie'));
+            } else{
+                console.log("Unsuccessful request");
+                console.log(response);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+    fetchDishes = async () => {
+        let dishesData = [] 
+        try {
+            const response = await axios.get('http://localhost:3001/dish', {params:{restaurant_ID: this.state.restaurant_ID}})
+            console.log("Status Code : ",response.status);
+            if(response.status === 200){
+                console.log("Successful request");
+                console.log(response.data);
+                for (let i=0;i < response.data.length; i++){
+                    let main_ingredients = response.data[i].main_ingredients;
+                    if (main_ingredients.length > 20) {
+                        main_ingredients = main_ingredients.slice(0,80).concat('...')
+                    }
+                    dishesData.push({
+                        'dish_ID': response.data[i].dish_ID,
+                        'dish_name': response.data[i].dish_name,
+                        'category_ID': response.data[i].category_ID,
+                        'main_ingredients': main_ingredients,
+                        'price': response.data[i].price,
+                        'about': response.data[i].about,
+                        "dish_image": response.data[i].dish_image,
+                        "quantity": 0
+                    });
+                }
+                this.setState({
+                    fetchedDishes: dishesData
+                })
+                console.log('Cookie status: ', cookie.load('cookie'));
+            } else{
+                console.log("Unsuccessful request");
+                console.log(response);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+    fetchCurrentOrder = async () => {
+        try {
+            console.log("Fetching current order")
+            const response = await axios.get('http://localhost:3001/getOrderDetails', {
+                params: {
+                    restaurant_ID: this.state.restaurant_ID,
+                    customer_ID: this.state.customer_ID
+                }
+            })
+            console.log("Status Code: ", response.status);
+            if (response.status === 200){
+                console.log("Successful request");
+                console.log(response.data);
+                let prev_state = this.state.fetchedDishes
+                let new_state = []
+                for (let i=0; i<prev_state.length;i++){
+                    let matchedDish = response.data.dishes.filter(x => x.dish_ID === prev_state[i].dish_ID)
+                    if(matchedDish.length>0){
+                        prev_state[i].quantity = matchedDish[0].quantity
+                    }
+                    new_state.push(prev_state[i])
+                }
+                let order_info = response.data
+                delete order_info["dishes"]
+                this.setState({
+                    order_info: order_info,
+                    fetchedDishes: new_state
+                });
+            } else {
+                console.log("Unsuccessful request");
+                console.log(response);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+    viewOrder = () => {
+        console.log("Inside view order function")
+        console.log(this.state.fetchedDishes)
+        // console.log(this.state.fetchedDishes[0])
+        let selected_dishes = []
+        let total_order_amount = 0.0
+        for (let i=0; i<this.state.fetchedDishes.length; i++) {
+            if (this.state.fetchedDishes[i].quantity > 0) {
+                selected_dishes.push(
+                    this.state.fetchedDishes[i]
+                )
+                total_order_amount += (this.state.fetchedDishes[i].quantity 
+                    * this.state.fetchedDishes[i].price)
+            }
+        }
+        console.log(selected_dishes);
+        console.log(`${total_order_amount}`);
+        console.log(this.state.order_info);
+        let new_order_info = this.state.order_info
+        new_order_info.total_amount = Math.round(total_order_amount*100)/100
+        this.setState({
+            showModal: !this.state.showModal,
+            order_info: new_order_info,
+            selectedDishes: selected_dishes
+        })
+    }
+    closeModal = () => {
+        this.setState({
+            showModal: !this.state.showModal
+        })
+    }
+    checkoutOrder = () => {
+        console.log("Inside checkout order function")
+        this.setState({
+            showModal: !this.state.showModal
+        })
+    }
+    render(){
+        console.log("Rendering")
+        const createOrderItemRow = row => {
+            return (
+                <Row>
+                    <Col xs={1}> {row.quantity} </Col>
+                    <Col xs={9}> {row.dish_name} </Col>
+                    <Col xs={2}> {`$${Math.round(row.quantity * row.price * 100)/100}`} </Col>
+                </Row>
+            )
+        }
+        const createCard = card => {
+            return (
+                <Col sm={3} className="m-3  border"  style={{ width: '32rem', height:'12rem'}}>
+                    <Row className="p-2">
+                        <Col xs={9} md={8}>
+                            <Row className="h5 mt-2 mb-4">{card.dish_name}</Row>
+                            <Row className="text-muted">{card.main_ingredients}</Row>
+                            <Row className="my-4 px-2">${card.price}</Row>
+                        </Col>
+                        <Col xs={3} md={4}>
+                            <Image src={card.dish_image} className="img-fluid" style={{height: '8rem'}} />
+                            <Row className="mt-1">
+                                <Col>
+                                    <Button onClick={this.updateQuantityHandler} size="md" variant="dark">-</Button>
+                                </Col>
+                                <Col className="h6 my-auto">
+                                    <Form.Label visuallyHidden>{card.dish_ID}</Form.Label>
+                                    {card.quantity}
+                                </Col>
+                                <Col>
+                                    <Button onClick={this.updateQuantityHandler} size="md" variant="dark">+</Button>
+                                </Col>
+                            </Row>
+                        </Col>
+                    </Row>
+                  </Col>
+            )
+        }
+        return(
+            <Container>
+                <Container>
+                    <Row>
+                        <Col xs={10}>
+                            <Image src={this.state.cover_image} style={{ width: '85rem', height: '20rem'}}></Image>
+                        </Col>
+                    </Row>
+                    <Row className="h2">
+                        {`${this.state.restaurant_name} (${this.state.short_address})`}
+                    </Row>
+                    <Row>
+                        {`${this.state.about}`}
+                    </Row>
+                    <Row>
+                        {`${this.state.full_address}`}
+                    </Row>
+                </Container>
+                <Container className="m-5">
+                    <Button variant="dark" onClick={this.viewOrder}>
+                        View Cart
+                    </Button>
+
+                    <Modal 
+                        show={this.state.showModal} 
+                        onHide={this.closeModal}
+                        backdrop="static"
+                        keyboard={false}
+                        centered
+                    >
+                        <Modal.Header closeButton>
+                        <Modal.Title>Current Order</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            {this.state.selectedDishes.map(createOrderItemRow)}
+                            <Row className="mt-4">
+                                <Col xs={1}></Col>
+                                <Col xs={9}>Total amount:</Col>
+                                <Col xs={2}> {`$${this.state.order_info.total_amount}`} </Col>
+                            </Row>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Link to={`/checkout/${this.state.restaurant_ID}`}>
+                                <Button className="mx-auto" variant="dark" onClick={this.checkoutOrder}>
+                                    Go to checkout • {`$${this.state.order_info.total_amount}`}
+                                </Button>
+                            </Link>
+                        </Modal.Footer>
+                    </Modal>
+                </Container>
+                <Container>
+                    <Row>
+                        {this.state.fetchedDishes.map(createCard)}
+                    </Row>
+                </Container>
+            </Container>
+            
+        )
+    }
+}
+
+
+
+//export Login Component
+export default RestaurantDetails;

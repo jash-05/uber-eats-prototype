@@ -23,6 +23,7 @@ import FormSelect from 'react-bootstrap/FormSelect';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Card from 'react-bootstrap/Card';
 import Accordion from 'react-bootstrap/Accordion';
+import DashboardNavbar from './navbar';
 
 // Define a Login Component
 class CustomerProfile extends Component{
@@ -248,8 +249,9 @@ class CustomerProfile extends Component{
             redirectVar = <Redirect to="/customerLogin"/>
         }
         return(
-            <Container>
+            <Container fluid>
                 {redirectVar}
+                <DashboardNavbar/>
                 <Container>
                     <Row>
                         <Col xs={3} className="mx-2 my-4">

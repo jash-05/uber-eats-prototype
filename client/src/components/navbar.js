@@ -63,6 +63,10 @@ class DashboardNavbar extends Component{
         this.props.history.push(`/searchResults/${e.target.firstChild.value}`)
         window.location.reload(false);
     } 
+    handleLogout = () => {
+        cookie.remove('customer');
+        window.location.reload(false);
+    }
     render(){
         return(
             <>
@@ -120,7 +124,11 @@ class DashboardNavbar extends Component{
                             />
                             {/* <Button variant="outline-success">Search</Button> */}
                         </Form>
-                        <Button variant="dark" size="md">Cart • 2</Button>
+                        {(
+                            cookie.load('customer')
+                            ? <Button variant="dark" size="md" onClick={this.handleLogout}>Logout</Button>
+                            : <Link to="/customerLogin"><Button variant="dark" size="md">Login</Button></Link>
+                        )}
                     </Nav>
                     </Container>
                 </Navbar>

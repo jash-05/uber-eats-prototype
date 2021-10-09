@@ -274,7 +274,7 @@ class Dashboard extends Component{
                         <Container className="my-5">
                             <Row>
                                 <p className="h4">Select delivery option</p>
-                                <p className="h6">(Click to toggle)</p>
+                                {/* <p className="h6">(Click to toggle)</p> */}
                             </Row>
                             <Row>
                                 <BootstrapSwitchButton 

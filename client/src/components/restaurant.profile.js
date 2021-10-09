@@ -482,7 +482,7 @@ class RestaurantProfile extends Component{
         console.log("Rendering")
         let redirectVar = null;
         if (!cookie.load('restaurant')){
-            redirectVar = <Redirect to="/restaurantLogin"/>
+            redirectVar = <Redirect to="/welcomeUser"/>
         }
         const createCard = card => {
             return (

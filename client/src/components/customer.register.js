@@ -12,6 +12,9 @@ import ReactS3 from 'react-s3';
 import s3_config from '../config/s3.config.js';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import {Redirect} from 'react-router';
+import Navbar from './navbar';
+import { Link } from 'react-router-dom';
 
 // Define a Login Component
 class CustomerRegister extends Component{
@@ -192,12 +195,19 @@ class CustomerRegister extends Component{
             });
     }
     render(){
+        console.log('RENDERING')
+        let redirectVar = null;
+        if(cookie.load('customer')){
+            redirectVar = <Redirect to= "/dashboard"/>
+        }
         return(
-            <div>
-                <Container className="mx-auto p-5">
+            <Container fluid style={{backgroundImage: `url('https://d1ralsognjng37.cloudfront.net/95eaddee-6c8f-4375-ab3f-7e88071518f9.jpeg')`, height:"100vh", backgroundPosition: "center", backgroundRepeat: "no-repeat", backgroundSize: "cover"}}>
+                    {redirectVar}
+                    <Navbar/>
+                {/* <Container className="mx-auto p-5">
                     <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Uber_Eats_2020_logo.svg/1280px-Uber_Eats_2020_logo.svg.png" fluid/>                    
-                </Container>
-                <Container className="mt-5">
+                </Container> */}
+                <Container className="mt-5 bg-light p-5 rounded">
                     <Form>
                         <Form.Group className="mb-3" controlId="formBasicFirstName">
                             <Form.Label>First name</Form.Label>
@@ -275,9 +285,15 @@ class CustomerRegister extends Component{
                                 Create new account
                             </Button>
                         </div>
+
+                        <div className="d-flex flex-row mt-3">
+                            <div className="">Already use Uber Eats?</div>
+                            <div className="mx-2"><Link to="/customerLogin" style={{textDecoration: 'none'}}>
+                            <p style={{color: "#21b53f"}}>Sign in</p></Link></div>
+                        </div>
                     </Form>
                 </Container>
-            </div>
+                </Container>
         )
     }
 }

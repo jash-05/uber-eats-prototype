@@ -12,6 +12,9 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import ReactS3 from 'react-s3';
 import s3_config from '../config/s3.config.js';
+import {Redirect} from 'react-router';
+import RestaurantNavbar from './restaurant.navbar';
+import { Link } from 'react-router-dom';
 
 // Define a Login Component
 class RestaurantRegister extends Component{
@@ -218,12 +221,19 @@ class RestaurantRegister extends Component{
             });
     }
     render(){
+        console.log('RENDERING')
+        let redirectVar = null;
+        if(cookie.load('restaurant')){
+            redirectVar = <Redirect to= "/welcomeUser"/>
+        }
         return(
-            <div>
-                <Container className="mx-auto p-5">
+            <Container fluid style={{backgroundImage: `url('https://images.unsplash.com/photo-1614946569026-d3044c2983e3?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1374&q=80')`, height:"100vh", backgroundPosition: "center", backgroundRepeat: "no-repeat", backgroundSize: "cover"}}>
+                {redirectVar}
+                <RestaurantNavbar/>
+                {/* <Container className="mx-auto p-5">
                     <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Uber_Eats_2020_logo.svg/1280px-Uber_Eats_2020_logo.svg.png" fluid/>                    
-                </Container>
-                <Container className="mt-5">
+                </Container> */}
+                <Container className="mt-5 bg-light px-5 py-3 rounded">
                     <Form>
                         <Form.Group className="mb-3" controlId="formBasicRestaurantName">
                             <Form.Label>Restaurant name</Form.Label>
@@ -348,9 +358,14 @@ class RestaurantRegister extends Component{
                                 Add your restaurant
                             </Button>
                         </div>
+                        <div className="d-flex flex-row mt-3">
+                            <div className="">Already use Uber Eats?</div>
+                            <div className="mx-2"><Link to="/customerLogin" style={{textDecoration: 'none'}}>
+                            <p style={{color: "#21b53f"}}>Sign in</p></Link></div>
+                        </div>
                     </Form>
                 </Container>
-            </div>
+            </Container>
         )
     }
 }

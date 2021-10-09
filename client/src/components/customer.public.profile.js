@@ -97,13 +97,8 @@ class CustomerPublicProfile extends Component{
     }
     render(){
         console.log("Rendering")
-        let redirectVar = null;
-        if (!cookie.load('customer')){
-            redirectVar = <Redirect to="/customerLogin"/>
-        }
         return(
             <Container>
-                {redirectVar}
                 <Navbar/>
                 <Container className="mt-5">
                     <Row>

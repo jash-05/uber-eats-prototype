@@ -64,13 +64,16 @@ class DashboardNavbar extends Component{
         window.location.reload(false);
     } 
     handleLogout = () => {
+        console.log(cookie.load('customer'))
+        console.log('Removing customer cookie')
         cookie.remove('customer');
+        console.log(cookie.load('customer'))
         window.location.reload(false);
     }
     render(){
         return(
-            <>
-                <Navbar expand="xxl">
+            <Container fluid style={{paddingLeft: 0, paddingRight: 0}}>
+                <Navbar expand="xxl" className="bg-light rounded">
                     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous"/>
                     <Container fluid className="px-5 py-3">
                     <Offcanvas show={this.state.showSideMenu} onHide={this.toggleSideMenu} style={{width: "25rem"}}>
@@ -127,12 +130,12 @@ class DashboardNavbar extends Component{
                         {(
                             cookie.load('customer')
                             ? <Button variant="dark" size="md" onClick={this.handleLogout}>Logout</Button>
-                            : <Link to="/customerLogin"><Button variant="dark" size="md">Login</Button></Link>
+                            : <Link to="/welcomeUser"><Button variant="dark" size="md">Login</Button></Link>
                         )}
                     </Nav>
                     </Container>
                 </Navbar>
-            </>
+            </Container>
         )
     }
 }

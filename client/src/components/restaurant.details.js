@@ -9,7 +9,8 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
+import Navbar from './navbar';
 
 // Define a Login Component
 class RestaurantDetails extends Component{
@@ -240,6 +241,10 @@ class RestaurantDetails extends Component{
         console.log("Rendering");
         console.log(this.state.order_info)
         console.log(this.state.fetchedDishes)
+        let redirectVar = null;
+        if (!cookie.load('customer')){
+            redirectVar = <Redirect to="/welcomeUser"/>
+        }
         const createOrderItemRow = row => {
             return (
                 <Row>
@@ -279,6 +284,8 @@ class RestaurantDetails extends Component{
         }
         return(
             <Container>
+                {redirectVar}
+                <Navbar/>
                 <Container>
                     <Row>
                         <Col xs={10}>

@@ -8,7 +8,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import BootstrapSwitchButton from 'bootstrap-switch-button-react'
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import HeartCheckbox from 'react-heart-checkbox';
@@ -86,6 +86,12 @@ class Favourites extends Component{
         console.log(restaurants)
     }
     render(){
+        console.log("Rendering")
+        console.log(this.state.filteredOrders)
+        let redirectVar = null;
+        if (!cookie.load('customer')){
+            redirectVar = <Redirect to="/welcomeUser"/>
+        }
         const createCard = card => {
             return (
                 <Col sm={3} className="mx-3 my-4"  style={{ width: '25rem'}}>
@@ -115,6 +121,7 @@ class Favourites extends Component{
         }
         return(
             <Container fluid>
+                {redirectVar}
                 <Navbar/>
                 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous"></link>
                 <Row className="m-4">

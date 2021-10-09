@@ -88,7 +88,7 @@ class CustomerOrders extends Component{
         console.log(this.state.filteredOrders)
         let redirectVar = null;
         if (!cookie.load('customer')){
-            redirectVar = <Redirect to="/customerLogin"/>
+            redirectVar = <Redirect to="/welcomeUser"/>
         }
         const capitalizeFirstLetter = text => {
             return text.charAt(0).toUpperCase() + text.slice(1)

@@ -7,6 +7,8 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
 import Image from 'react-bootstrap/Image';
+import RestaurantNavbar from './restaurant.navbar';
+import { Link } from 'react-router-dom';
 
 // Define a Login Component
 class RestaurantLogin extends Component{
@@ -78,16 +80,15 @@ class RestaurantLogin extends Component{
         let redirectVar = null;
         if(cookie.load('restaurant')){
             redirectVar = <Redirect to= "/restaurantProfile"/>
-        } else {
-            redirectVar = <Redirect to="/restaurantLogin"/>
         }
         return(
-            <div>
+            <Container fluid style={{backgroundImage: `url('https://images.unsplash.com/photo-1614946569026-d3044c2983e3?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1374&q=80')`, height:"100vh", backgroundPosition: "center", backgroundRepeat: "no-repeat", backgroundSize: "cover"}}>
                 {redirectVar}
-                <Container className="mx-auto p-5">
+                <RestaurantNavbar/>
+                {/* <Container className="mx-auto p-5">
                     <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Uber_Eats_2020_logo.svg/1280px-Uber_Eats_2020_logo.svg.png" fluid/>                    
-                </Container>
-                <Container className="mt-5">
+                </Container> */}
+                <Container className="mt-5 bg-light p-5 rounded">
                     <Form>
                         
                         <Form.Group className="mb-3" controlId="formBasicEmail">
@@ -105,9 +106,14 @@ class RestaurantLogin extends Component{
                                 Login to your account
                             </Button>
                         </div>
+                        <div className="d-flex flex-row mt-3">
+                            <div className="">New to Uber Eats?</div>
+                            <div className="mx-2"><Link to="/restaurantRegister" style={{textDecoration: 'none'}}>
+                            <p style={{color: "#21b53f"}}>Create an account</p></Link></div>
+                        </div>
                     </Form>
                 </Container>
-            </div>
+            </Container>
         )
     }
 }

@@ -13,6 +13,8 @@ import RestaurantProfile from './restaurant.profile';
 import CustomerProfile from './customer.profile';
 import SearchResults from './searchResult';
 import Favourites from './favourites';
+import CustomerOrders from './customer.orders';
+import CustomerPublicProfile from './customer.public.profile';
 
 //Create a Main Component
 class Main extends Component {
@@ -34,6 +36,8 @@ class Main extends Component {
                 <Route path="/customerProfile" component={CustomerProfile}/>
                 <Route path="/searchResults/:searchQuery" component={SearchResults}/>
                 <Route path="/favourites" component={Favourites}/>
+                <Route path="/customerOrders" component={CustomerOrders} />
+                <Route path="/customerPublicProfile/:customer_ID" component={CustomerPublicProfile} />
             </div>
         )
     }

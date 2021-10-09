@@ -87,7 +87,24 @@ Order.getAllOrderItems = (order_ID, result) => {
 };
 
 Order.getAllOrdersByCustomer = (customer_ID, result) => {
-    conn.query(`SELECT * FROM orders WHERE customer_ID=${customer_ID}`,
+    conn.query(`
+    SELECT o.order_ID, o.customer_ID, o.address_ID, o.order_status, o.total_amount, o.order_placed_timestamp, o.order_type, GROUP_CONCAT(od.dish_ID) AS dish_IDs, GROUP_CONCAT(d.dish_name) AS dish_names, GROUP_CONCAT(od.quantity) AS dish_quantities, GROUP_CONCAT(d.price) AS dish_prices, ca.address_type, r.restaurant_ID, r.restaurant_name, ra.line1, ra.line2, ra.city, ra.state_name, ra.zipcode
+	FROM orders AS o
+	LEFT JOIN order_details AS od
+		ON o.order_ID = od.order_ID
+	LEFT JOIN dishes AS d
+		ON od.dish_ID = d.dish_ID
+	LEFT JOIN customers AS c
+		ON o.customer_ID = c.customer_ID
+	LEFT JOIN customer_addresses AS ca
+		ON o.address_ID = ca.address_ID
+	LEFT JOIN restaurants AS r
+		ON o.restaurant_ID = r.restaurant_ID
+	LEFT JOIN restaurant_addresses AS ra
+		ON r.restaurant_ID = ra.restaurant_ID
+	WHERE o.customer_ID = ${customer_ID} AND NOT order_status = "in-cart"
+    GROUP BY o.order_ID;
+    `,
     (err, res) => {
         if (err) {
             console.log("error: ", err);

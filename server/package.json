@@ -18,7 +18,6 @@
   },
   "homepage": "https://github.com/jash-05/uber-eats-prototype#readme",
   "dependencies": {
-    "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "client-sessions": "^0.8.0",
     "cookie-parser": "^1.4.5",

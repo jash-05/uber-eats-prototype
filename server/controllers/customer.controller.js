@@ -76,6 +76,7 @@ exports.authenticate = (req, res) => {
 
 // Find a single Customer with a customerId
 exports.findOne = (req, res) => {
+    console.log(req.params)
     Customer.findById(req.params.customerId, (err, data) => {
       if (err) {
         if (err.kind === "not_found") {

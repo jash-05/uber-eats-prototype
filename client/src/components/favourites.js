@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import HeartCheckbox from 'react-heart-checkbox';
-import Navbar from './navbar'
+import Navbar from './navbar';
 
 // Define a Login Component
 class Favourites extends Component{

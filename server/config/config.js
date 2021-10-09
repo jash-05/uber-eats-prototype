@@ -3,5 +3,6 @@ module.exports = {
     PORT: "3306",
     USER: "admin",
     PASSWORD: "jashCC05",
-    DB: "uber_eats_db"
+    DB: "uber_eats_db",
+    SERVER_IP: "localhost"
   };

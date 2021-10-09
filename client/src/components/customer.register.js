@@ -15,6 +15,7 @@ import Col from 'react-bootstrap/Col';
 import {Redirect} from 'react-router';
 import Navbar from './navbar';
 import { Link } from 'react-router-dom';
+import server_IP from '../config/server.config.js';
 
 // Define a Login Component
 class CustomerRegister extends Component{
@@ -160,7 +161,7 @@ class CustomerRegister extends Component{
         //set the with credentials to true
         axios.defaults.withCredentials = true;
         //make a post request with the user data
-        axios.post('http://localhost:3001/customers',data)
+        axios.post(`http://${server_IP}:3001/customers`,data)
             .then(response => {
                 console.log("Status Code : ",response.status);
                 if(response.status === 200){
@@ -177,7 +178,7 @@ class CustomerRegister extends Component{
                         address_type: "primary"
                     }
                     console.log(address_data);
-                    axios.post('http://localhost:3001/customerAddress', address_data)
+                    axios.post(`http://${server_IP}:3001/customerAddress`, address_data)
                     .then(resp => {
                         console.log("Status Code: ", resp.status);
                         if (resp.status === 200) {

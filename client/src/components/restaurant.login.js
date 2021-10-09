@@ -9,6 +9,7 @@ import Container from 'react-bootstrap/Container';
 import Image from 'react-bootstrap/Image';
 import RestaurantNavbar from './restaurant.navbar';
 import { Link } from 'react-router-dom';
+import server_IP from '../config/server.config.js';
 
 // Define a Login Component
 class RestaurantLogin extends Component{
@@ -59,7 +60,7 @@ class RestaurantLogin extends Component{
         //set the with credentials to true
         axios.defaults.withCredentials = true;
         //make a post request with the user data
-        axios.post('http://localhost:3001/restaurant',data)
+        axios.post(`http://${server_IP}:3001/restaurant`,data)
             .then(response => {
                 console.log("Status Code : ",response.status);
                 if(response.status === 200){

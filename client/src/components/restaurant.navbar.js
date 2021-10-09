@@ -16,6 +16,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import CloseButton from 'react-bootstrap/CloseButton';
 import {withRouter} from 'react-router-dom';
+import server_IP from '../config/server.config.js';
 
 // Define a Login Component
 class RestaurantNavbar extends Component{

@@ -24,6 +24,7 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Card from 'react-bootstrap/Card';
 import Accordion from 'react-bootstrap/Accordion';
 import RestaurantNavbar from './restaurant.navbar';
+import server_IP from '../config/server.config.js';
 
 // Define a Login Component
 class RestaurantProfile extends Component{
@@ -112,7 +113,7 @@ class RestaurantProfile extends Component{
         try {
             await this.setRestaurantState();
             console.log('Fetching restaurant details')
-            const response = await axios.get(`http://localhost:3001/restaurants/${this.state.restaurant_ID}`);
+            const response = await axios.get(`http://${server_IP}:3001/restaurants/${this.state.restaurant_ID}`);
             console.log("Status Code : ",response.status);
             if(response.status === 200){
                 console.log("Successful request");
@@ -155,7 +156,7 @@ class RestaurantProfile extends Component{
         try {
             await this.setRestaurantState();
             console.log('Fetching dishes')
-            const response = await axios.get('http://localhost:3001/dish', {params:{restaurant_ID: this.state.restaurant_ID}})
+            const response = await axios.get(`http://${server_IP}:3001/dish`, {params:{restaurant_ID: this.state.restaurant_ID}})
             console.log("Status Code : ",response.status);
             if(response.status === 200){
                 console.log("Successful request");
@@ -192,7 +193,7 @@ class RestaurantProfile extends Component{
         try {
             await this.setRestaurantState();
             console.log('Fetching dishes')
-            const response = await axios.get('http://localhost:3001/fetchOrdersForRestaurant', {params:{restaurant_ID: this.state.restaurant_ID}})
+            const response = await axios.get(`http://${server_IP}:3001/fetchOrdersForRestaurant`, {params:{restaurant_ID: this.state.restaurant_ID}})
             console.log("Status Code : ",response.status);
             if(response.status === 200){
                 console.log("Successful request of fetching orders");
@@ -335,7 +336,7 @@ class RestaurantProfile extends Component{
         //set the with credentials to true
         axios.defaults.withCredentials = true;
         // make a post request with the user data
-        axios.put(`http://localhost:3001/restaurants/${this.state.restaurant_ID}`,restaurant_data)
+        axios.put(`http://${server_IP}:3001/restaurants/${this.state.restaurant_ID}`,restaurant_data)
             .then(response => {
                 console.log("Status Code : ",response.status);
                 if(response.status === 200){
@@ -350,7 +351,7 @@ class RestaurantProfile extends Component{
                         state_name: this.state.state_name,
                         zipcode: this.state.zipcode
                     }
-                    axios.put('http://localhost:3001/restaurantAddress', address_data)
+                    axios.put(`http://${server_IP}:3001/restaurantAddress`, address_data)
                     .then(resp => {
                         console.log("Status Code: ", resp.status);
                         if (resp.status === 200) {
@@ -418,7 +419,7 @@ class RestaurantProfile extends Component{
             let data = this.state.new_dish;
             data['restaurant_ID'] = parseInt(this.state.restaurant_ID);
             console.log(data);
-            const response = await axios.post('http://localhost:3001/dish', data);
+            const response = await axios.post(`http://${server_IP}:3001/dish`, data);
             console.log("Status Code: ", response.status);
             if (response.status === 200){
                 console.log("Successful request");
@@ -464,7 +465,7 @@ class RestaurantProfile extends Component{
                     order_ID: e.target.id,
                     order_status: e.target.name
                 }
-                const response = await axios.post('http://localhost:3001/updateOrderStatus', data)
+                const response = await axios.post(`http://${server_IP}:3001/updateOrderStatus`, data)
                 if (response.status === 200){
                     console.log("Successful request")
                     console.log(response.data)

@@ -25,6 +25,7 @@ import Card from 'react-bootstrap/Card';
 import Accordion from 'react-bootstrap/Accordion';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Navbar from './navbar'
+import server_IP from '../config/server.config.js';
 
 // Define a Login Component
 class CustomerPublicProfile extends Component{
@@ -63,7 +64,7 @@ class CustomerPublicProfile extends Component{
         try {
             console.log('Fetching customer details')
             console.log(this.props.match)
-            const response = await axios.get(`http://localhost:3001/customers/${this.props.match.params.customer_ID}`);
+            const response = await axios.get(`http://${server_IP}:3001/customers/${this.props.match.params.customer_ID}`);
             console.log("Status Code : ",response.status);
             if(response.status === 200){
                 console.log("Successful request");

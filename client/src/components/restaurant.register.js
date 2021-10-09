@@ -15,6 +15,7 @@ import s3_config from '../config/s3.config.js';
 import {Redirect} from 'react-router';
 import RestaurantNavbar from './restaurant.navbar';
 import { Link } from 'react-router-dom';
+import server_IP from '../config/server.config.js';
 
 // Define a Login Component
 class RestaurantRegister extends Component{
@@ -188,7 +189,7 @@ class RestaurantRegister extends Component{
         //set the with credentials to true
         axios.defaults.withCredentials = true;
         // make a post request with the user data
-        axios.post('http://localhost:3001/restaurants',restaurant_data)
+        axios.post(`http://${server_IP}:3001/restaurants`,restaurant_data)
             .then(response => {
                 console.log("Status Code : ",response.status);
                 if(response.status === 200){
@@ -203,7 +204,7 @@ class RestaurantRegister extends Component{
                         state: this.state.state,
                         zip: this.state.zip
                     }
-                    axios.post('http://localhost:3001/restaurantAddress', address_data)
+                    axios.post(`http://${server_IP}:3001/restaurantAddress`, address_data)
                     .then(resp => {
                         console.log("Status Code: ", resp.status);
                         if (resp.status === 200) {

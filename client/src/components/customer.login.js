@@ -11,6 +11,8 @@ import Navbar from './navbar';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { Link } from 'react-router-dom';
+import server_IP from '../config/server.config.js';
+
 
 // Define a Login Component
 class CustomerLogin extends Component{
@@ -61,7 +63,7 @@ class CustomerLogin extends Component{
         //set the with credentials to true
         axios.defaults.withCredentials = true;
         //make a post request with the user data
-        axios.post('http://localhost:3001/customer',data)
+        axios.post(`http://${server_IP}:3001/customer`,data)
             .then(response => {
                 console.log("Status Code : ",response.status);
                 if(response.status === 200){

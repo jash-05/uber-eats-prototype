@@ -18,6 +18,7 @@ import Form from 'react-bootstrap/Form';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Accordion from 'react-bootstrap/Accordion';
+import server_IP from '../config/server.config.js';
 
 // Define a Login Component
 class CustomerOrders extends Component{
@@ -44,7 +45,7 @@ class CustomerOrders extends Component{
     fetchOrders = async () => {
         try {
             console.log('Fetching dishes')
-            const response = await axios.get('http://localhost:3001/fetchOrdersForCustomer', {params:{customer_ID: cookie.load('customer')}})
+            const response = await axios.get(`http://${server_IP}:3001/fetchOrdersForCustomer`, {params:{customer_ID: cookie.load('customer')}})
             console.log("Status Code : ",response.status);
             if(response.status === 200){
                 console.log("Successful request of fetching orders");

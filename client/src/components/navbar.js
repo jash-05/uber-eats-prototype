@@ -16,6 +16,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import CloseButton from 'react-bootstrap/CloseButton';
 import {withRouter} from 'react-router-dom';
+import server_IP from '../config/server.config.js';
 
 // Define a Login Component
 class DashboardNavbar extends Component{
@@ -41,7 +42,7 @@ class DashboardNavbar extends Component{
     fetchCustomerDetails = async () => {
         if (cookie.load('customer')) {
             try {
-                const response = await axios.get(`http://localhost:3001/customers/${cookie.load('customer')}`);
+                const response = await axios.get(`http://${server_IP}:3001/customers/${cookie.load('customer')}`);
                 console.log(response.data)
                 this.setState({
                     profile_picture: response.data.profile_picture,

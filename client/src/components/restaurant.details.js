@@ -11,6 +11,7 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import { Link, Redirect } from 'react-router-dom';
 import Navbar from './navbar';
+import server_IP from '../config/server.config.js';
 
 // Define a Login Component
 class RestaurantDetails extends Component{
@@ -85,7 +86,7 @@ class RestaurantDetails extends Component{
     }
     addItemToOrder = async (data) => {
         try {
-            const response  = await axios.post('http://localhost:3001/addOrderItem', data);
+            const response  = await axios.post(`http://${server_IP}:3001/addOrderItem`, data);
             console.log("Status Code: ", response.status);
             if (response.status === 200){
                 console.log("Successful request");
@@ -99,7 +100,7 @@ class RestaurantDetails extends Component{
     }
     fetchRestaurantDetails = async () => {
         try {
-            const response = await axios.get(`http://localhost:3001/restaurants/${this.state.restaurant_ID}`);
+            const response = await axios.get(`http://${server_IP}:3001/restaurants/${this.state.restaurant_ID}`);
             console.log("Status Code : ",response.status);
             if(response.status === 200){
                 console.log("Successful request");
@@ -125,7 +126,7 @@ class RestaurantDetails extends Component{
     fetchDishes = async () => {
         let dishesData = [] 
         try {
-            const response = await axios.get('http://localhost:3001/dish', {params:{restaurant_ID: this.state.restaurant_ID}})
+            const response = await axios.get(`http://${server_IP}:3001/dish`, {params:{restaurant_ID: this.state.restaurant_ID}})
             console.log("Status Code : ",response.status);
             if(response.status === 200){
                 console.log("Successful request");
@@ -161,7 +162,7 @@ class RestaurantDetails extends Component{
     fetchCurrentOrder = async () => {
         try {
             console.log("Fetching current order")
-            const response = await axios.get('http://localhost:3001/getOrderDetails', {
+            const response = await axios.get(`http://${server_IP}:3001/getOrderDetails`, {
                 params: {
                     restaurant_ID: this.state.restaurant_ID,
                     customer_ID: this.state.customer_ID

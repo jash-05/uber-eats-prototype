@@ -24,6 +24,7 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Card from 'react-bootstrap/Card';
 import Accordion from 'react-bootstrap/Accordion';
 import RestaurantNavbar from './restaurant.navbar';
+import server_IP from '../config/server.config.js';
 
 // Define a Login Component
 class EditDish extends Component{
@@ -57,7 +58,7 @@ class EditDish extends Component{
     fetchDishDetails = async () => {
         try {
             console.log('Fetching dish details')
-            const response = await axios.get(`http://localhost:3001/dish/${this.props.match.params.dish_ID}`);
+            const response = await axios.get(`http://${server_IP}:3001/dish/${this.props.match.params.dish_ID}`);
             console.log("Status Code : ",response.status);
             if(response.status === 200){
                 console.log("Successful request");
@@ -134,7 +135,7 @@ class EditDish extends Component{
         //set the with credentials to true
         axios.defaults.withCredentials = true;
         // make a post request with the user data
-        axios.put(`http://localhost:3001/dish/${this.state.dish_ID}`,dish_data)
+        axios.put(`http://${server_IP}:3001/dish/${this.state.dish_ID}`,dish_data)
             .then(response => {
                 console.log("Status Code : ",response.status);
                 if(response.status === 200){

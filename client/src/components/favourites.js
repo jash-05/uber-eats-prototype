@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import HeartCheckbox from 'react-heart-checkbox';
 import Navbar from './navbar';
+import server_IP from '../config/server.config.js';
 
 // Define a Login Component
 class Favourites extends Component{
@@ -37,7 +38,7 @@ class Favourites extends Component{
         }
         try {
             console.log('Fetching customer favourites')
-            const response = await axios.get(`http://localhost:3001/favourites/${cookie.load('customer')}`);
+            const response = await axios.get(`http://${server_IP}:3001/favourites/${cookie.load('customer')}`);
             if (response.status===200){
                 console.log("Successful request");
                 console.log('Response')
@@ -71,7 +72,7 @@ class Favourites extends Component{
                 try {
                     axios.defaults.withCredentials = true;
                     console.log('Sending request to delete favourite restaurant')
-                    const response = await axios.delete(`http://localhost:3001/favourites/${cookie.load('customer')}/${this.state.favouriteRestaurants[i].restaurant_ID}`)
+                    const response = await axios.delete(`http://${server_IP}:3001/favourites/${cookie.load('customer')}/${this.state.favouriteRestaurants[i].restaurant_ID}`)
                     console.log(response.data)
                 } catch (err) {
                     console.error(err);

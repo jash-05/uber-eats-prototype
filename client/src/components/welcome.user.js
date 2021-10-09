@@ -10,6 +10,7 @@ import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import { Link } from 'react-router-dom';
 import Navbar from './navbar';
+import server_IP from '../config/server.config.js';
 
 // Define a Login Component
 class WelcomeUser extends Component{
@@ -54,7 +55,7 @@ class WelcomeUser extends Component{
         //set the with credentials to true
         axios.defaults.withCredentials = true;
         //make a post request with the user data
-        axios.post('http://localhost:3001/customers',data)
+        axios.post(`http://${server_IP}:3001/customers`,data)
             .then(response => {
                 console.log("Status Code : ",response.status);
                 if(response.status === 200){

@@ -24,6 +24,7 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Card from 'react-bootstrap/Card';
 import Accordion from 'react-bootstrap/Accordion';
 import Navbar from './navbar';
+import server_IP from '../config/server.config.js';
 
 // Define a Login Component
 class CustomerProfile extends Component{
@@ -82,7 +83,7 @@ class CustomerProfile extends Component{
         try {
             await this.setCustomerState();
             console.log('Fetching customer details')
-            const response = await axios.get(`http://localhost:3001/customers/${this.state.customer_ID}`);
+            const response = await axios.get(`http://${server_IP}:3001/customers/${this.state.customer_ID}`);
             console.log("Status Code : ",response.status);
             if(response.status === 200){
                 console.log("Successful request");
@@ -209,7 +210,7 @@ class CustomerProfile extends Component{
         //set the with credentials to true
         axios.defaults.withCredentials = true;
         // make a post request with the user data
-        axios.put(`http://localhost:3001/customers/${this.state.customer_ID}`,customer_data)
+        axios.put(`http://${server_IP}:3001/customers/${this.state.customer_ID}`,customer_data)
             .then(response => {
                 console.log("Status Code : ",response.status);
                 if(response.status === 200){
@@ -224,7 +225,7 @@ class CustomerProfile extends Component{
                         state_name: this.state.state_name,
                         zipcode: this.state.zipcode
                     }
-                    axios.put('http://localhost:3001/customerAddress', address_data)
+                    axios.put(`http://${server_IP}:3001/customerAddress`, address_data)
                     .then(resp => {
                         console.log("Status Code: ", resp.status);
                         if (resp.status === 200) {

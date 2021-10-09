@@ -11,6 +11,7 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import { Link } from 'react-router-dom';
 import FloatingLabel from 'react-bootstrap/esm/FloatingLabel';
+import server_IP from '../config/server.config.js';
 
 
 // Define a Login Component
@@ -47,7 +48,7 @@ class CheckoutOrder extends Component{
     fetchCurrentOrder = async () => {
         try {
             console.log("Fetching current order")
-            const response = await axios.get('http://localhost:3001/getOrderDetails', {
+            const response = await axios.get(`http://${server_IP}:3001/getOrderDetails`, {
                 params: {
                     restaurant_ID: this.state.restaurant_ID,
                     customer_ID: this.state.customer_ID
@@ -83,7 +84,7 @@ class CheckoutOrder extends Component{
     }
     fetchCustomerAddresses = async (customer_ID) => {
         try {
-            const response = await axios.get(`http://localhost:3001/customerAddress/${customer_ID}`)
+            const response = await axios.get(`http://${server_IP}:3001/customerAddress/${customer_ID}`)
             console.log("Fetched customer addresses")
             console.log("Status Code: ", response.status)
             if (response.status === 200) {
@@ -128,7 +129,7 @@ class CheckoutOrder extends Component{
         let data = this.state.new_address;
         data['customer_ID'] = this.state.customer_ID;
         try {
-            const response = await axios.post('http://localhost:3001/customerAddress', data);
+            const response = await axios.post(`http://${server_IP}:3001/customerAddress`, data);
             console.log("Status Code: ", response.status);
             if (response.status === 200){
                 console.log("Successful request");
@@ -153,7 +154,7 @@ class CheckoutOrder extends Component{
                 'total_amount': this.state.order_info.total_amount,
                 'order_type': sessionStorage.getItem("order_type")
             }
-            const response = await axios.post('http://localhost:3001/placeOrder', data);
+            const response = await axios.post(`http://${server_IP}:3001/placeOrder`, data);
             console.log("Status Code: ", response.status);
             if (response.status === 200){
                 console.log("Successful request");

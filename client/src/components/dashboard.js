@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import HeartCheckbox from 'react-heart-checkbox';
 import Navbar from './navbar'
+import server_IP from '../config/server.config.js';
 
 // Define a Login Component
 class Dashboard extends Component{
@@ -124,7 +125,7 @@ class Dashboard extends Component{
     getCityFromCustomerID = async (customer_ID) => {
         try {
             console.log('Fetching city')
-            const response = await axios.get(`http://localhost:3001/city/${customer_ID}`);
+            const response = await axios.get(`http://${server_IP}:3001/city/${customer_ID}`);
             this.setState({
                 city: response.data.city
             })
@@ -136,7 +137,7 @@ class Dashboard extends Component{
     getFavouritesForCustomer = async (customer_ID) => {
         try {
             console.log('Fetching customer favourites')
-            const response = await axios.get(`http://localhost:3001/favourites/${customer_ID}`);
+            const response = await axios.get(`http://${server_IP}:3001/favourites/${customer_ID}`);
             console.log(response.data);
             let favourite_restaurants = []
             for (let i=0;i<response.data.length;i++){
@@ -160,7 +161,7 @@ class Dashboard extends Component{
         let restaurantData = [] 
         try {
             let payload = {...data, city: this.state.city, customer_ID: cookie.load('customer')}
-            const response = await axios.get('http://localhost:3001/restaurants', {params: payload})
+            const response = await axios.get(`http://${server_IP}:3001/restaurants`, {params: payload})
             console.log("Status Code : ",response.status);
             if(response.status === 200){
                 console.log("Successful request");
@@ -201,11 +202,11 @@ class Dashboard extends Component{
                         }
                         console.log(data)
                         console.log('Sending request to add favourite restaurant')
-                        const response = await axios.post('http://localhost:3001/favourites', data)
+                        const response = await axios.post(`http://${server_IP}:3001/favourites`, data)
                         console.log(response.data);
                     } else {
                         console.log('Sending request to delete favourite restaurant')
-                        const response = await axios.delete(`http://localhost:3001/favourites/${cookie.load('customer')}/${this.state.fetchedRestaurants[i].restaurant_ID}`)
+                        const response = await axios.delete(`http://${server_IP}:3001/favourites/${cookie.load('customer')}/${this.state.fetchedRestaurants[i].restaurant_ID}`)
                         console.log(response.data)
                     }
                     restaurants.push({...this.state.fetchedRestaurants[i], favourite: !this.state.fetchedRestaurants[i].favourite})

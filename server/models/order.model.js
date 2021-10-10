@@ -11,8 +11,8 @@ const Order = function (order) {
     this.total_amount = order.total_amount
 }
 
-Order.getOrderInfo = (customer_ID, restaurant_ID, result) => {
-    conn.query(`SELECT * FROM orders WHERE customer_ID = ${customer_ID} AND restaurant_ID = ${restaurant_ID} AND order_status = "in-cart";`, (err, res) => {
+Order.getOrderInfo = (customer_ID, result) => {
+    conn.query(`SELECT * FROM orders WHERE customer_ID = ${customer_ID} AND order_status = "in-cart";`, (err, res) => {
         if (err) {
             console.log("error: ", err);
             result(null, err);
@@ -21,6 +21,35 @@ Order.getOrderInfo = (customer_ID, restaurant_ID, result) => {
 
         console.log("order_info: ", res);
         result(null, res)
+    });
+};
+
+Order.getAllOrderItems = (order_ID, result) => {
+    conn.query(`SELECT * FROM order_details AS o INNER JOIN dishes as d ON o.dish_ID = d.dish_ID WHERE order_ID = ${order_ID}`, (err, res) => {
+        if (err) {
+            console.log("error: ", err);
+            result(null, err);
+            return;
+        }
+
+        console.log("dishes: ", res);
+        result(null, res)
+    });
+};
+
+Order.deleteCurrentCart = (customer_ID, result) => {
+    conn.query(`DELETE FROM orders WHERE customer_ID = ${customer_ID} AND order_status = "in-cart"`, (err, res) => {
+      if (err) {
+        console.log(`Error while trying to delete order for customer ${customer_ID}: ${err}`);
+        result(null, err);
+        return;
+      }
+      if (res.affectedRows == 0) {
+        result({ err_type: "not_found" }, null);
+        return;
+      }
+      console.log(`Deleted cart order for customer ${customer_ID}`);
+      result(null, res);
     });
 };
 
@@ -73,18 +102,6 @@ Order.upsertOrderItem = (newOrderItem, result) => {
     });
 };
 
-Order.getAllOrderItems = (order_ID, result) => {
-    conn.query(`SELECT * FROM order_details AS o INNER JOIN dishes as d ON o.dish_ID = d.dish_ID WHERE order_ID = ${order_ID}`, (err, res) => {
-        if (err) {
-            console.log("error: ", err);
-            result(null, err);
-            return;
-        }
-
-        console.log("dishes: ", res);
-        result(null, res)
-    });
-};
 
 Order.getAllOrdersByCustomer = (customer_ID, result) => {
     conn.query(`

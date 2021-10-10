@@ -14,6 +14,7 @@ import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import HeartCheckbox from 'react-heart-checkbox';
 import Navbar from './navbar'
 import server_IP from '../config/server.config.js';
+import Form from 'react-bootstrap/Form';
 
 // Define a Login Component
 class Dashboard extends Component{
@@ -52,6 +53,23 @@ class Dashboard extends Component{
             pickup: this.state.pickup
         }
         this.fetchRestaurants(data);
+    }
+    cityChangeHandler = async (e) => {
+        const data  = {
+            vegetarian: !this.state.vegetarian,
+            non_vegetarian: this.state.non_vegetarian,
+            vegan: this.state.vegan,
+            delivery: this.state.delivery,
+            pickup: this.state.pickup
+        }
+        try {
+            await this.fetchRestaurants(data);
+            this.setState({
+                city: e.target.value
+            })
+        } catch(err) {
+            console.error(err);
+        }
     }
     vegetarianChangeHandler = async (e) => {
         const data  = {
@@ -286,9 +304,22 @@ class Dashboard extends Component{
                                 />
                             </Row>
                         </Container>
+                        <Container className="my-5">
+                            <Row>
+                                <p className="h4">Search by location</p>
+                            </Row>
+                            <Row>
+                                <Form.Group as={Col} controlId="formGridCity">
+                                    <Form.Control onChange={this.cityChangeHandler} defaultValue={this.state.city}/>
+                                </Form.Group>
+                            </Row>
+                        </Container>
                     </Col>
                     <Col xs={9}>
                       <Container>
+                          <Row className="display-6 my-2" style={{fontSize: "1.5rem"}}>
+                                {(this.state.city ? `Higher preference given to restaurants of ${this.state.city}` : "")}
+                          </Row>
                           <Row>
                           {this.state.fetchedRestaurants.map(createCard)}
                           </Row>

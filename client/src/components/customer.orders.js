@@ -120,7 +120,7 @@ class CustomerOrders extends Component{
                     <Card.Header>
                         <Row className="p-1">
                         <Col xs={8}>
-                            Status: <strong>{capitalizeFirstLetter(((row.order_status==="placed") ? "New Order" : row.order_status))}</strong>
+                            Status: <strong>{capitalizeFirstLetter(((row.order_status==="placed") ? "New Order" : (row.order_status==="cancelled" ? "Preparing" : row.order_status)))}</strong>
                         </Col>
                         <Col xs={2}>
                             Order # {row.order_ID}
@@ -180,7 +180,7 @@ class CustomerOrders extends Component{
                                         <option value="all">All orders</option>
                                         <option value="placed">New orders</option>
                                         <option value="delivered">Delivered orders</option>
-                                        <option value="cancelled">Cancelled orders</option>
+                                        <option value="cancelled">Preparing orders</option>
                                     </Form.Select>
                                 </Row>
                                 <Row>

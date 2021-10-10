@@ -4,7 +4,7 @@ const MOMENT= require( 'moment' );
 
 exports.getOrder = (req, res) => {
     console.log(req.query);
-    Order.getOrderInfo(req.query.customer_ID, req.query.restaurant_ID, (err, data) => {
+    Order.getOrderInfo(req.query.customer_ID, (err, data) => {
         if (err)
             res.status(500).send({
                 message:
@@ -12,38 +12,43 @@ exports.getOrder = (req, res) => {
             });
         else {
             if (data.length==0){
-                let order_dict = {
-                    restaurant_ID: req.query.restaurant_ID,
-                    customer_ID: req.query.customer_ID,
-                    order_status: "in-cart"
-                }
-                Order.createOrder(order_dict, (err, data) => {
-                    if(err)
-                    res.status(500).send({
-                        message:
-                            err.message || "Some error occured while creating a new order"
-                    });
-                    else {
-                        res.send(data);
-                    };
-                });
-                
+                res.send({});
             } else {
-                console.log(data[0].order_ID)
-                Order.getAllOrderItems(data[0].order_ID, (err, fetched_items) => {
-                    if (err)
-                        res.status(500).send({
-                            message:
-                                err.message || "Some error occured while retrieving order items!"
-                        });
-                    else {
-                        res.send(Object.assign({}, data[0], {"dishes": fetched_items}))
-                    }
-                })
+                res.send(data[0])
             }
         } 
     })
 }
+
+exports.getOrderItemsByOrderID = (req, res) => {
+    console.log(req.query);
+    Order.getAllOrderItems(req.query.order_ID, (err, data) => {
+        if (err)
+            res.status(500).send({
+                message:
+                    err.message || "Some error occured while retrieving orders!"
+            });
+        else res.send({dishes: data});
+    })
+}
+
+exports.deleteInCartOrder = (req, res) => {
+    console.log(req.params)
+    Order.deleteCurrentCart(req.params.customer_ID, (err, data) => {
+        if (err) {
+          if (err.err_type === "not_found") {
+            res.status(200).send({
+              message: `Could not find cart order for customer ${req.params.customer_ID}.`
+            });
+          } else {
+            res.status(500).send({
+              message: `Could not delete order for customer ${req.params.customer_ID}.`
+            });
+          }
+        } else res.send({ 
+            message: `Cart order was deleted successfully for customer ${req.params.customer_ID}!` });
+      });
+};
 
 exports.addItem = (req, res) => {
     console.log("Adding order item with following data: ")

@@ -542,7 +542,7 @@ class RestaurantProfile extends Component{
                     <Card.Header>
                         <Row className="p-1">
                         <Col xs={8}>
-                            Status: <strong>{capitalizeFirstLetter(((row.order_status==="placed") ? "New Order" : row.order_status))}</strong>
+                            Status: <strong>{capitalizeFirstLetter(((row.order_status==="placed") ? "New Order" : (row.order_status==="cancelled" ? "Preparing" : row.order_status)))}</strong>
                         </Col>
                         <Col xs={2}>
                             Order # {row.order_ID}
@@ -585,7 +585,7 @@ class RestaurantProfile extends Component{
                                 >   
                                     <Dropdown.Item name="placed" id={row.order_ID}>New Order</Dropdown.Item>
                                     <Dropdown.Item name="delivered" id={row.order_ID}>Delivered</Dropdown.Item>
-                                    <Dropdown.Item name="cancelled" id={row.order_ID}>Cancelled</Dropdown.Item>
+                                    <Dropdown.Item name="cancelled" id={row.order_ID}>Preparing</Dropdown.Item>
                                 </DropdownButton>
                             </Col>
                             <Col xs={4}>
@@ -832,7 +832,7 @@ class RestaurantProfile extends Component{
                                         <option value="all">All orders</option>
                                         <option value="placed">New orders</option>
                                         <option value="delivered">Delivered orders</option>
-                                        <option value="cancelled">Cancelled orders</option>
+                                        <option value="cancelled">Preparing orders</option>
                                     </Form.Select>
                                 </Row>
                                 <Row>

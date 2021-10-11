@@ -9,12 +9,14 @@ import NavDropdown from 'react-bootstrap/NavDropdown'
 import Image from 'react-bootstrap/Image';
 import Container from 'react-bootstrap/Container';
 import Offcanvas from 'react-bootstrap/Offcanvas';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import cookie from 'react-cookies';
 import axios from 'axios';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import CloseButton from 'react-bootstrap/CloseButton';
+import {withRouter} from 'react-router-dom';
+import server_IP from '../config/server.config.js';
 
 // Define a Login Component
 class DashboardNavbar extends Component{
@@ -40,7 +42,7 @@ class DashboardNavbar extends Component{
     fetchCustomerDetails = async () => {
         if (cookie.load('customer')) {
             try {
-                const response = await axios.get(`http://localhost:3001/customers/${cookie.load('customer')}`);
+                const response = await axios.get(`http://${server_IP}:3001/customers/${cookie.load('customer')}`);
                 console.log(response.data)
                 this.setState({
                     profile_picture: response.data.profile_picture,
@@ -55,11 +57,24 @@ class DashboardNavbar extends Component{
         this.setState({
             showSideMenu: !this.state.showSideMenu
         })
+    }
+    searchHandler = async (e) => {
+        e.preventDefault();
+        console.log(e.target.firstChild.value);
+        this.props.history.push(`/searchResults/${e.target.firstChild.value}`)
+        window.location.reload(false);
     } 
+    handleLogout = () => {
+        console.log(cookie.load('customer'))
+        console.log('Removing customer cookie')
+        cookie.remove('customer');
+        console.log(cookie.load('customer'))
+        window.location.reload(false);
+    }
     render(){
         return(
-            <>
-                <Navbar expand="xxl">
+            <Container fluid style={{paddingLeft: 0, paddingRight: 0}}>
+                <Navbar expand="xxl" className="bg-light rounded">
                     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous"/>
                     <Container fluid className="px-5 py-3">
                     <Offcanvas show={this.state.showSideMenu} onHide={this.toggleSideMenu} style={{width: "25rem"}}>
@@ -103,7 +118,7 @@ class DashboardNavbar extends Component{
                         </Link>
                     </Navbar.Brand>
                     <Nav>
-                        <Form className="d-flex mx-5">
+                        <Form className="d-flex mx-5" onSubmit={this.searchHandler}>
                             <FormControl
                                 type="search"
                                 size="md"
@@ -113,13 +128,17 @@ class DashboardNavbar extends Component{
                             />
                             {/* <Button variant="outline-success">Search</Button> */}
                         </Form>
-                        <Button variant="dark" size="md">Cart • 2</Button>
+                        {(
+                            cookie.load('customer')
+                            ? <Button variant="dark" size="md" onClick={this.handleLogout}>Logout</Button>
+                            : <Link to="/welcomeUser"><Button variant="dark" size="md">Login</Button></Link>
+                        )}
                     </Nav>
                     </Container>
                 </Navbar>
-            </>
+            </Container>
         )
     }
 }
 //export Login Component
-export default DashboardNavbar;
+export default withRouter(DashboardNavbar);

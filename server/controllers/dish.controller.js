@@ -39,6 +39,21 @@ exports.findAll = (req, res) => {
     });
 };
 
+exports.findById = (req, res) => {
+    Dish.findById(req.params.dish_ID, (err, data) => {
+        if (err) {
+            if (err.kind === "not_found") {
+                res.status(404).send({
+                    message: `Not found dish with id: ${req.params.dish_ID}`
+                });
+            } else {
+                res.status(500).send({
+                    message: `Error retrieving dish with id: ${req.params.dish_ID}`
+                });
+            }
+        } else res.send(data);
+    });
+};
 
 exports.update = (req, res) => {
     if (!req.body) {
@@ -46,17 +61,16 @@ exports.update = (req, res) => {
             message: "Content can not be empty!"
         });
     }
-
     Dish.updateById(
-        req.params.restaurantId, new Restaurant(req.body), (err, data) => {
+        req.body, (err, data) => {
             if (err) {
                 if (err.kind === "not_found") {
                     res.status(404).send({
-                        message: `Not found restaurant with id: ${req.params.restaurantId}`
+                        message: `Not found dish with id: ${req.body.dish_ID}`
                     });
                 } else {
                     res.status(500).send({
-                        message: `Error updating restaurant with id: ${req.params.restaurantId}`
+                        message: `Error updating dish with id: ${req.body.dish_ID}`
                     });
                 }
             } else res.send(data)

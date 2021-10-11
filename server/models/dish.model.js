@@ -37,10 +37,30 @@ Dish.getAll = (restaurant_ID, result) => {
     });
 };
 
-Dish.updateById = (id, restaurant, result) => {
+Dish.findById = (dish_ID, result) => {
+  conn.query(`SELECT * FROM dishes WHERE dish_ID = ${dish_ID}`, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+
+    if (res.length) {
+      console.log("found dish: ", res[0]);
+      result(null, res[0]);
+      return;
+    }
+
+    // not found restaurant with the id
+    result({ kind: "not_found" }, null);
+  });
+};
+
+
+Dish.updateById = (dish, result) => {
     conn.query(
-      "UPDATE restarants SET email = ?, name = ?, active = ? WHERE id = ?",
-      [restaurant.email, restaurant.name, restaurant.active, id],
+      "UPDATE dishes SET dish_name = ?, main_ingredients = ?, price = ?, dish_image = ? WHERE dish_ID = ?",
+      [dish.dish_name, dish.main_ingredients, dish.price, dish.dish_image, dish.dish_ID],
       (err, res) => {
         if (err) {
           console.log("error: ", err);
@@ -53,9 +73,7 @@ Dish.updateById = (id, restaurant, result) => {
           result({ kind: "not_found" }, null);
           return;
         }
-  
-        console.log("updated restaurant: ", { id: id, ...restaurant });
-        result(null, { id: id, ...restaurant });
+        result(null, { dish });
       }
     );
   };

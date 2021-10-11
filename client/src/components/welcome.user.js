@@ -9,6 +9,8 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
 import { Link } from 'react-router-dom';
+import Navbar from './navbar';
+import server_IP from '../config/server.config.js';
 
 // Define a Login Component
 class WelcomeUser extends Component{
@@ -53,7 +55,7 @@ class WelcomeUser extends Component{
         //set the with credentials to true
         axios.defaults.withCredentials = true;
         //make a post request with the user data
-        axios.post('http://localhost:3001/customers',data)
+        axios.post(`http://${server_IP}:3001/customers`,data)
             .then(response => {
                 console.log("Status Code : ",response.status);
                 if(response.status === 200){
@@ -68,11 +70,12 @@ class WelcomeUser extends Component{
     }
     render(){
         return(
-            <div>
-                <Container className="mx-auto p-5">
+            <Container fluid style={{backgroundImage: `url('https://duyt4h9nfnj50.cloudfront.net/resized/70c5a078c4f5cbba5e1d1b49d69e57b8-w2880-8a.jpg')`, height:"100vh", backgroundPosition: "center", backgroundRepeat: "no-repeat", backgroundSize: "cover"}}>
+                <Navbar/>
+                {/* <Container className="mx-auto p-5">
                     <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Uber_Eats_2020_logo.svg/1280px-Uber_Eats_2020_logo.svg.png" fluid/>                    
-                </Container>
-                <Container className="mt-5">
+                </Container> */}
+                <Container className="mt-5 bg-light p-5 rounded">
                     <Row>
                         <p className="display-6">Welcome to Uber Eats! Are you a customer or restaurant owner?</p>
                     </Row>
@@ -96,7 +99,7 @@ class WelcomeUser extends Component{
 
                     </Row>
                 </Container>
-            </div>
+            </Container>
         )
     }
 }

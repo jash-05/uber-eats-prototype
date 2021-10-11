@@ -11,7 +11,8 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 import { Link } from 'react-router-dom';
 import FloatingLabel from 'react-bootstrap/esm/FloatingLabel';
-
+import server_IP from '../config/server.config.js';
+import {withRouter} from 'react-router-dom';
 
 // Define a Login Component
 class CheckoutOrder extends Component{
@@ -22,7 +23,7 @@ class CheckoutOrder extends Component{
         //maintain the state required for this component
         this.state = {
             restaurant_ID: props.match.params.restaurant_ID,
-            customer_ID: 13,
+            customer_ID: cookie.load('customer'),
             restaurant_name: "",
             selectedDishes: [],
             customer_addresses: [],
@@ -47,7 +48,7 @@ class CheckoutOrder extends Component{
     fetchCurrentOrder = async () => {
         try {
             console.log("Fetching current order")
-            const response = await axios.get('http://localhost:3001/getOrderDetails', {
+            const response = await axios.get(`http://${server_IP}:3001/getOrderDetails`, {
                 params: {
                     restaurant_ID: this.state.restaurant_ID,
                     customer_ID: this.state.customer_ID
@@ -59,11 +60,16 @@ class CheckoutOrder extends Component{
                 console.log(response.data);
                 let selected_dishes = [];
                 let total_order_amount = 0.0;
-                for (let i=0; i<response.data.dishes.length;i++){
-                    if (response.data.dishes[i].quantity > 0){
-                        selected_dishes.push(response.data.dishes[i])
-                        total_order_amount += (response.data.dishes[i].quantity 
-                            * response.data.dishes[i].price)
+                const res = await axios.get(`http://${server_IP}:3001/getOrderItems`, {
+                    params: {
+                        order_ID: response.data.order_ID
+                    }
+                })
+                for (let i=0; i<res.data.dishes.length;i++){
+                    if (res.data.dishes[i].quantity > 0){
+                        selected_dishes.push(res.data.dishes[i])
+                        total_order_amount += (res.data.dishes[i].quantity 
+                            * res.data.dishes[i].price)
                     }
                 }
                 let order_info = response.data;
@@ -83,7 +89,7 @@ class CheckoutOrder extends Component{
     }
     fetchCustomerAddresses = async (customer_ID) => {
         try {
-            const response = await axios.get(`http://localhost:3001/customerAddress/${customer_ID}`)
+            const response = await axios.get(`http://${server_IP}:3001/customerAddress/${customer_ID}`)
             console.log("Fetched customer addresses")
             console.log("Status Code: ", response.status)
             if (response.status === 200) {
@@ -128,7 +134,7 @@ class CheckoutOrder extends Component{
         let data = this.state.new_address;
         data['customer_ID'] = this.state.customer_ID;
         try {
-            const response = await axios.post('http://localhost:3001/customerAddress', data);
+            const response = await axios.post(`http://${server_IP}:3001/customerAddress`, data);
             console.log("Status Code: ", response.status);
             if (response.status === 200){
                 console.log("Successful request");
@@ -150,13 +156,15 @@ class CheckoutOrder extends Component{
             let data = {
                 'order_ID': this.state.order_info.order_ID,
                 'address_ID': this.state.selected_address_ID,
-                'total_amount': this.state.order_info.total_amount
+                'total_amount': this.state.order_info.total_amount,
+                'order_type': sessionStorage.getItem("order_type")
             }
-            const response = await axios.post('http://localhost:3001/placeOrder', data);
+            const response = await axios.post(`http://${server_IP}:3001/placeOrder`, data);
             console.log("Status Code: ", response.status);
             if (response.status === 200){
                 console.log("Successful request");
                 console.log(response.data)
+                this.props.history.push('/dashboard')
             } else {
                 console.log("Unsuccessful request");
                 console.log(response);
@@ -282,4 +290,4 @@ class CheckoutOrder extends Component{
 
 
 //export Login Component
-export default CheckoutOrder;
+export default withRouter(CheckoutOrder);

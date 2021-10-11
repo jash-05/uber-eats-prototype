@@ -3,7 +3,11 @@ module.exports = app => {
 
     app.get("/getOrderDetails", orders.getOrder);
     
+    app.get("/getOrderItems", orders.getOrderItemsByOrderID);
+
     app.post("/addOrderItem", orders.addItem);
+
+    app.delete("/deleteInCartOrder/:customer_ID", orders.deleteInCartOrder);
 
     app.get("/fetchOrdersForCustomer", orders.fetchOrdersForCustomer);
 

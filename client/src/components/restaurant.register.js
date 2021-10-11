@@ -12,6 +12,10 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import ReactS3 from 'react-s3';
 import s3_config from '../config/s3.config.js';
+import {Redirect} from 'react-router';
+import RestaurantNavbar from './restaurant.navbar';
+import { Link } from 'react-router-dom';
+import server_IP from '../config/server.config.js';
 
 // Define a Login Component
 class RestaurantRegister extends Component{
@@ -38,7 +42,10 @@ class RestaurantRegister extends Component{
             delivery: true,
             pickup: false,
             uploaded_image: "",
-            cover_image: ""
+            cover_image: "",
+            opening_time: "",
+            closing_time: "",
+            about: ""
         }
         // //Bind the handlers to this class
         this.restaurantNameChangeHandler = this.restaurantNameChangeHandler.bind(this);
@@ -75,6 +82,11 @@ class RestaurantRegister extends Component{
     ownerNameChangeHandler = (e) => {
         this.setState({
             owner_name: e.target.value
+        })
+    }
+    aboutChangeHandler = (e) => {
+        this.setState({
+            about: e.target.value
         })
     }
     emailChangeHandler = (e) => {
@@ -160,7 +172,16 @@ class RestaurantRegister extends Component{
             console.log(err);
         })
     }
-
+    openingTimeChangeHandler = e => {
+        this.setState({
+            opening_time: e.target.value
+        })
+    }
+    closingTimeChangeHandler = e => {
+        this.setState({
+            closing_time: e.target.value
+        })
+    }
     //submit Login handler to send a request to the node backend
     submitLogin = (e) => {
         console.log(`Restaurant name: ${this.state.restaurant_name}, Owner name: ${this.state.owner_name}, Email: ${this.state.email}, Password: ${this.state.password}, Country: ${this.state.country}, Phone number: ${this.state.phone_number}`);
@@ -179,13 +200,16 @@ class RestaurantRegister extends Component{
             vegan: this.state.vegan,
             delivery: this.state.delivery,
             pickup: this.state.pickup,
-            cover_image: this.state.cover_image
+            cover_image: this.state.cover_image,
+            opening_time: this.state.opening_time,
+            closing_time: this.state.closing_time,
+            about: this.state.about
         }
         console.log(restaurant_data)
         //set the with credentials to true
         axios.defaults.withCredentials = true;
         // make a post request with the user data
-        axios.post('http://localhost:3001/restaurants',restaurant_data)
+        axios.post(`http://${server_IP}:3001/restaurants`,restaurant_data)
             .then(response => {
                 console.log("Status Code : ",response.status);
                 if(response.status === 200){
@@ -193,19 +217,20 @@ class RestaurantRegister extends Component{
                     console.log(response);
                     console.log('Cookie status: ', cookie.load('cookie'));
                     const address_data = {
-                        restaurant_ID: response.data.restaurant_id,
+                        restaurant_ID: response.data.restaurant_ID,
                         address_line_1: this.state.address_line_1,
                         address_line_2: this.state.address_line_2,
                         city: this.state.city,
                         state: this.state.state,
                         zip: this.state.zip
                     }
-                    axios.post('http://localhost:3001/restaurantAddress', address_data)
+                    axios.post(`http://${server_IP}:3001/restaurantAddress`, address_data)
                     .then(resp => {
                         console.log("Status Code: ", resp.status);
                         if (resp.status === 200) {
                             console.log("Successful request for storing restaurant address");
                             console.log(resp);
+                            window.location.reload(false);
                         } else {
                             console.log("Unsuccessful request for storing restaurant address");
                             console.log(resp)
@@ -218,12 +243,19 @@ class RestaurantRegister extends Component{
             });
     }
     render(){
+        console.log('RENDERING')
+        let redirectVar = null;
+        if(cookie.load('restaurant')){
+            redirectVar = <Redirect to= "/restaurantProfile"/>
+        }
         return(
-            <div>
-                <Container className="mx-auto p-5">
+            <Container fluid style={{backgroundImage: `url('https://images.unsplash.com/photo-1614946569026-d3044c2983e3?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1374&q=80')`, height:"100vh", backgroundPosition: "center", backgroundRepeat: "no-repeat", backgroundSize: "cover"}}>
+                {redirectVar}
+                <RestaurantNavbar/>
+                {/* <Container className="mx-auto p-5">
                     <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Uber_Eats_2020_logo.svg/1280px-Uber_Eats_2020_logo.svg.png" fluid/>                    
-                </Container>
-                <Container className="mt-5">
+                </Container> */}
+                <Container className="mt-5 bg-light px-5 py-3 rounded">
                     <Form>
                         <Form.Group className="mb-3" controlId="formBasicRestaurantName">
                             <Form.Label>Restaurant name</Form.Label>
@@ -233,6 +265,11 @@ class RestaurantRegister extends Component{
                         <Form.Group className="mb-3" controlId="formBasicOwnerName">
                             <Form.Label>Owner name</Form.Label>
                             <Form.Control onChange={this.ownerNameChangeHandler} type="text" placeholder="Enter your full name" />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" controlId="formBasicOwnerName">
+                            <Form.Label>About</Form.Label>
+                            <Form.Control onChange={this.aboutChangeHandler} type="text" placeholder="Enter a description for your restaurant" />
                         </Form.Group>
                         
                         <Form.Group className="mb-3" controlId="formBasicEmail">
@@ -338,6 +375,18 @@ class RestaurantRegister extends Component{
                             </div>
                         </Form.Group>                
                         
+                        <Row className="mb-3">
+                            <Form.Group as={Col} controlId="formGridCity">
+                            <Form.Label>Opening Time</Form.Label>
+                            <Form.Control onChange={this.openingTimeChangeHandler} placeholder="Eg: 10:00 AM" />
+                            </Form.Group>
+
+                            <Form.Group as={Col} controlId="formGridState">
+                            <Form.Label>Closing Time</Form.Label>
+                            <Form.Control onChange={this.closingTimeChangeHandler} placeholder="Eg: 09:30 PM"/>
+                            </Form.Group>
+                        </Row>
+
                         <Form.Group controlId="formCoverImage" className="mb-3">
                             <Form.Label>Upload your cover image</Form.Label>
                             <Form.Control onChange={this.coverImageChangeHandler} type="file" />
@@ -348,9 +397,14 @@ class RestaurantRegister extends Component{
                                 Add your restaurant
                             </Button>
                         </div>
+                        <div className="d-flex flex-row mt-3">
+                            <div className="">Already use Uber Eats?</div>
+                            <div className="mx-2"><Link to="/restaurantLogin" style={{textDecoration: 'none'}}>
+                            <p style={{color: "#21b53f"}}>Sign in</p></Link></div>
+                        </div>
                     </Form>
                 </Container>
-            </div>
+            </Container>
         )
     }
 }

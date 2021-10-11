@@ -11,8 +11,8 @@ const Order = function (order) {
     this.total_amount = order.total_amount
 }
 
-Order.getOrderInfo = (customer_ID, restaurant_ID, result) => {
-    conn.query(`SELECT * FROM orders WHERE customer_ID = ${customer_ID} AND restaurant_ID = ${restaurant_ID} AND order_status = "in-cart";`, (err, res) => {
+Order.getOrderInfo = (customer_ID, result) => {
+    conn.query(`SELECT * FROM orders WHERE customer_ID = ${customer_ID} AND order_status = "in-cart";`, (err, res) => {
         if (err) {
             console.log("error: ", err);
             result(null, err);
@@ -21,6 +21,35 @@ Order.getOrderInfo = (customer_ID, restaurant_ID, result) => {
 
         console.log("order_info: ", res);
         result(null, res)
+    });
+};
+
+Order.getAllOrderItems = (order_ID, result) => {
+    conn.query(`SELECT * FROM order_details AS o INNER JOIN dishes as d ON o.dish_ID = d.dish_ID WHERE order_ID = ${order_ID}`, (err, res) => {
+        if (err) {
+            console.log("error: ", err);
+            result(null, err);
+            return;
+        }
+
+        console.log("dishes: ", res);
+        result(null, res)
+    });
+};
+
+Order.deleteCurrentCart = (customer_ID, result) => {
+    conn.query(`DELETE FROM orders WHERE customer_ID = ${customer_ID} AND order_status = "in-cart"`, (err, res) => {
+      if (err) {
+        console.log(`Error while trying to delete order for customer ${customer_ID}: ${err}`);
+        result(null, err);
+        return;
+      }
+      if (res.affectedRows == 0) {
+        result({ err_type: "not_found" }, null);
+        return;
+      }
+      console.log(`Deleted cart order for customer ${customer_ID}`);
+      result(null, res);
     });
 };
 
@@ -73,21 +102,26 @@ Order.upsertOrderItem = (newOrderItem, result) => {
     });
 };
 
-Order.getAllOrderItems = (order_ID, result) => {
-    conn.query(`SELECT * FROM order_details AS o INNER JOIN dishes as d ON o.dish_ID = d.dish_ID WHERE order_ID = ${order_ID}`, (err, res) => {
-        if (err) {
-            console.log("error: ", err);
-            result(null, err);
-            return;
-        }
-
-        console.log("dishes: ", res);
-        result(null, res)
-    });
-};
 
 Order.getAllOrdersByCustomer = (customer_ID, result) => {
-    conn.query(`SELECT * FROM orders WHERE customer_ID=${customer_ID}`,
+    conn.query(`
+    SELECT o.order_ID, o.customer_ID, o.address_ID, o.order_status, o.total_amount, o.order_placed_timestamp, o.order_type, GROUP_CONCAT(od.dish_ID) AS dish_IDs, GROUP_CONCAT(d.dish_name) AS dish_names, GROUP_CONCAT(od.quantity) AS dish_quantities, GROUP_CONCAT(d.price) AS dish_prices, ca.address_type, r.restaurant_ID, r.restaurant_name, ra.line1, ra.line2, ra.city, ra.state_name, ra.zipcode
+	FROM orders AS o
+	LEFT JOIN order_details AS od
+		ON o.order_ID = od.order_ID
+	LEFT JOIN dishes AS d
+		ON od.dish_ID = d.dish_ID
+	LEFT JOIN customers AS c
+		ON o.customer_ID = c.customer_ID
+	LEFT JOIN customer_addresses AS ca
+		ON o.address_ID = ca.address_ID
+	LEFT JOIN restaurants AS r
+		ON o.restaurant_ID = r.restaurant_ID
+	LEFT JOIN restaurant_addresses AS ra
+		ON r.restaurant_ID = ra.restaurant_ID
+	WHERE o.customer_ID = ${customer_ID} AND NOT order_status = "in-cart"
+    GROUP BY o.order_ID;
+    `,
     (err, res) => {
         if (err) {
             console.log("error: ", err);
@@ -126,7 +160,7 @@ Order.getAllOrdersByRestaurant = (restaurant_ID, result) => {
 }
  
 Order.placeOrder = (orderDetails, result) => {
-    conn.query(`UPDATE orders SET total_amount=${orderDetails.total_amount}, address_ID= ${orderDetails.address_ID}, order_status="placed" WHERE order_ID=${orderDetails.order_ID};`, (err, res) => {
+    conn.query(`UPDATE orders SET total_amount = ${orderDetails.total_amount}, address_ID = ${orderDetails.address_ID}, order_status = "placed", order_placed_timestamp = "${orderDetails.order_placed_timestamp}", order_type="${orderDetails.order_type}" WHERE order_ID=${orderDetails.order_ID};`, (err, res) => {
         if (err) {
             console.log("error: ", err);
             result(null, err);

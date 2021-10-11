@@ -11,6 +11,8 @@ app.set('view engine', 'ejs');
 app.set('views','./views')
 app.use(express.static(__dirname + '/public'));
 
+const serverConfig = require('./config/config.js');
+
 // app.use(cookieParser());
 // app.use(session({
 //     secret: 'cmpe_273_secure_string',
@@ -20,7 +22,7 @@ app.use(express.static(__dirname + '/public'));
 app.use(express.json());
 
 app.use(cors({
-    origin: ["http://localhost:3000"],
+    origin: [`http://${serverConfig.SERVER_IP}:3000`],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true
 }));
@@ -42,7 +44,7 @@ app.use(session({
 
 //Allow Access Control
 app.use(function(req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Origin', `http://${serverConfig.SERVER_IP}:3000`);
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT,DELETE');
     res.setHeader('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers');

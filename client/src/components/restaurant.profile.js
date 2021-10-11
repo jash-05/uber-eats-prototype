@@ -23,6 +23,8 @@ import FormSelect from 'react-bootstrap/FormSelect';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Card from 'react-bootstrap/Card';
 import Accordion from 'react-bootstrap/Accordion';
+import RestaurantNavbar from './restaurant.navbar';
+import server_IP from '../config/server.config.js';
 
 // Define a Login Component
 class RestaurantProfile extends Component{
@@ -52,6 +54,9 @@ class RestaurantProfile extends Component{
             cover_image: "",
             const_cover_image: "",
             about: "",
+            const_about: "",
+            opening_time: "",
+            closing_time: "",
             full_adress: "",
             fetchedDishes: [],
             cover_image_file: "",
@@ -108,7 +113,7 @@ class RestaurantProfile extends Component{
         try {
             await this.setRestaurantState();
             console.log('Fetching restaurant details')
-            const response = await axios.get(`http://localhost:3001/restaurants/${this.state.restaurant_ID}`);
+            const response = await axios.get(`http://${server_IP}:3001/restaurants/${this.state.restaurant_ID}`);
             console.log("Status Code : ",response.status);
             if(response.status === 200){
                 console.log("Successful request");
@@ -121,6 +126,7 @@ class RestaurantProfile extends Component{
                     const_cover_image: response.data.cover_image,
                     cover_image: response.data.cover_image,
                     about: response.data.about,
+                    const_about: response.data.about,
                     owner_name: response.data.owner_name,
                     line1: response.data.line1,
                     line2: response.data.line2,
@@ -132,7 +138,9 @@ class RestaurantProfile extends Component{
                     non_vegetarian: ((response.data.non_vegetarian===1) ? true : false),
                     vegan: ((response.data.vegan===1) ? true : false),
                     delivery: ((response.data.delivery===1) ? true : false),
-                    pickup: ((response.data.pickup===1) ? true : false) 
+                    pickup: ((response.data.pickup===1) ? true : false),
+                    opening_time: response.data.opening_time,
+                    closing_time: response.data.closing_time
                 })
                 console.log('Cookie status: ', cookie.load('cookie'));
             } else{
@@ -148,14 +156,14 @@ class RestaurantProfile extends Component{
         try {
             await this.setRestaurantState();
             console.log('Fetching dishes')
-            const response = await axios.get('http://localhost:3001/dish', {params:{restaurant_ID: this.state.restaurant_ID}})
+            const response = await axios.get(`http://${server_IP}:3001/dish`, {params:{restaurant_ID: this.state.restaurant_ID}})
             console.log("Status Code : ",response.status);
             if(response.status === 200){
                 console.log("Successful request");
                 console.log(response.data);
                 for (let i=0;i < response.data.length; i++){
                     let main_ingredients = response.data[i].main_ingredients;
-                    if (main_ingredients.length > 20) {
+                    if ((main_ingredients) && (main_ingredients.length > 20)) {
                         main_ingredients = main_ingredients.slice(0,80).concat('...')
                     }
                     dishesData.push({
@@ -185,7 +193,7 @@ class RestaurantProfile extends Component{
         try {
             await this.setRestaurantState();
             console.log('Fetching dishes')
-            const response = await axios.get('http://localhost:3001/fetchOrdersForRestaurant', {params:{restaurant_ID: this.state.restaurant_ID}})
+            const response = await axios.get(`http://${server_IP}:3001/fetchOrdersForRestaurant`, {params:{restaurant_ID: this.state.restaurant_ID}})
             console.log("Status Code : ",response.status);
             if(response.status === 200){
                 console.log("Successful request of fetching orders");
@@ -211,6 +219,21 @@ class RestaurantProfile extends Component{
     ownerNameChangeHandler = (e) => {
         this.setState({
             owner_name: e.target.value
+        })
+    }
+    aboutChangeHandler = (e) => {
+        this.setState({
+            about: e.target.value
+        })
+    }
+    openingTimeChangeHandler = (e) => {
+        this.setState({
+            opening_time: e.target.value
+        })
+    }
+    closingTimeChangeHandler = (e) => {
+        this.setState({
+            closing_time: e.target.value
         })
     }
     addressLine1ChangeHandler = (e) => {
@@ -298,19 +321,22 @@ class RestaurantProfile extends Component{
             restaurant_ID: this.state.restaurant_ID,
             restaurant_name : this.state.restaurant_name,
             owner_name: this.state.owner_name,
+            about: this.state.about,
             phone_number: this.state.phone_number,
             vegetarian: this.state.vegetarian,
             non_vegetarian: this.state.non_vegetarian,
             vegan: this.state.vegan,
             delivery: this.state.delivery,
             pickup: this.state.pickup,
+            opening_time: this.state.opening_time,
+            closing_time: this.state.closing_time,
             cover_image: this.state.cover_image
         }
         console.log(restaurant_data)
         //set the with credentials to true
         axios.defaults.withCredentials = true;
         // make a post request with the user data
-        axios.put(`http://localhost:3001/restaurants/${this.state.restaurant_ID}`,restaurant_data)
+        axios.put(`http://${server_IP}:3001/restaurants/${this.state.restaurant_ID}`,restaurant_data)
             .then(response => {
                 console.log("Status Code : ",response.status);
                 if(response.status === 200){
@@ -325,7 +351,7 @@ class RestaurantProfile extends Component{
                         state_name: this.state.state_name,
                         zipcode: this.state.zipcode
                     }
-                    axios.put('http://localhost:3001/restaurantAddress', address_data)
+                    axios.put(`http://${server_IP}:3001/restaurantAddress`, address_data)
                     .then(resp => {
                         console.log("Status Code: ", resp.status);
                         if (resp.status === 200) {
@@ -393,7 +419,7 @@ class RestaurantProfile extends Component{
             let data = this.state.new_dish;
             data['restaurant_ID'] = parseInt(this.state.restaurant_ID);
             console.log(data);
-            const response = await axios.post('http://localhost:3001/dish', data);
+            const response = await axios.post(`http://${server_IP}:3001/dish`, data);
             console.log("Status Code: ", response.status);
             if (response.status === 200){
                 console.log("Successful request");
@@ -439,7 +465,7 @@ class RestaurantProfile extends Component{
                     order_ID: e.target.id,
                     order_status: e.target.name
                 }
-                const response = await axios.post('http://localhost:3001/updateOrderStatus', data)
+                const response = await axios.post(`http://${server_IP}:3001/updateOrderStatus`, data)
                 if (response.status === 200){
                     console.log("Successful request")
                     console.log(response.data)
@@ -457,7 +483,7 @@ class RestaurantProfile extends Component{
         console.log("Rendering")
         let redirectVar = null;
         if (!cookie.load('restaurant')){
-            redirectVar = <Redirect to="/restaurantLogin"/>
+            redirectVar = <Redirect to="/welcomeUser"/>
         }
         const createCard = card => {
             return (
@@ -511,12 +537,12 @@ class RestaurantProfile extends Component{
         }
         const createOrderRow = row => {
             return (
-                <Col className="m-3">
-                    <Card style={{width: "40rem"}}>
+                <Col className="m-3 px-5 mx-5">
+                    <Card style={{width: "50rem"}}>
                     <Card.Header>
                         <Row className="p-1">
                         <Col xs={8}>
-                            Status: <strong>{capitalizeFirstLetter(((row.order_status==="placed") ? "New Order" : row.order_status))}</strong>
+                            Status: <strong>{capitalizeFirstLetter(((row.order_status==="placed") ? "New Order" : (row.order_status==="cancelled" ? "Preparing" : row.order_status)))}</strong>
                         </Col>
                         <Col xs={2}>
                             Order # {row.order_ID}
@@ -559,7 +585,7 @@ class RestaurantProfile extends Component{
                                 >   
                                     <Dropdown.Item name="placed" id={row.order_ID}>New Order</Dropdown.Item>
                                     <Dropdown.Item name="delivered" id={row.order_ID}>Delivered</Dropdown.Item>
-                                    <Dropdown.Item name="cancelled" id={row.order_ID}>Cancelled</Dropdown.Item>
+                                    <Dropdown.Item name="cancelled" id={row.order_ID}>Preparing</Dropdown.Item>
                                 </DropdownButton>
                             </Col>
                             <Col xs={4}>
@@ -574,73 +600,79 @@ class RestaurantProfile extends Component{
             )
         }
         return(
-            <Container>
+            <Container fluid style={{ paddingLeft: 0, paddingRight: 0}}>
                 {redirectVar}
-                <Container>
+                <RestaurantNavbar/>
+                <Container fluid style={{ paddingLeft: 0, paddingRight: 0}}>
                     <Row>
-                        <Col xs={10}>
-                            <Image src={this.state.const_cover_image} style={{ width: '85rem', height: '20rem', objectFit:'cover'}}></Image>
+                        <Col>
+                            <Image className="" src={this.state.const_cover_image} fluid style={{ width: "100vw", height:"20rem", objectFit:'cover'}}></Image>
                         </Col>
                     </Row>
-                    <Row className="h2">
+                    <Row className="display-6 my-4 mx-5">
                         {`${this.state.const_restaurant_name} (${this.state.short_address})`}
                     </Row>
-                    <Row>
-                        {`${this.state.about}`}
+                    <Row className="lead mx-5">
+                        {`${this.state.const_about}`}
                     </Row>
-                    <Row>
+                    <Row className="my-2 lead mx-5">
                         {`${this.state.full_address}`}
                     </Row>
                 </Container>
-                <Container className="my-5">
-                    <Tabs defaultActiveKey="third">
-                        <Tab eventKey="first" title="Profile">
-                            <Container className="mt-5">
-                                <Form>
-                                    <Form.Group className="mb-3" controlId="formBasicRestaurantName">
-                                        <Form.Label>Restaurant name</Form.Label>
+                <Container className="my-5 mx-5 px-5" fluid>
+                    <Tabs defaultActiveKey="second" fill justify>
+                        <Tab eventKey="first" title={<span className="display-6 text-dark" style={{fontSize: "1.75rem"}}>Profile</span>}>
+                            <Container className="mt-5" fluid>
+                                <Form className="mx-5">
+                                    <Form.Group className="mb-4" controlId="formBasicRestaurantName">
+                                        <Form.Label className="display-6" style={{fontSize: "1.3rem"}}>Restaurant name</Form.Label>
                                         <Form.Control onChange={this.restaurantNameChangeHandler} type="text" defaultValue={this.state.restaurant_name} />
                                     </Form.Group>
 
-                                    <Form.Group className="mb-3" controlId="formBasicOwnerName">
-                                        <Form.Label>Owner name</Form.Label>
+                                    <Form.Group className="mb-4" controlId="formBasicOwnerName">
+                                        <Form.Label className="display-6" style={{fontSize: "1.3rem"}}>Owner name</Form.Label>
                                         <Form.Control onChange={this.ownerNameChangeHandler} type="text" defaultValue={this.state.owner_name} />
                                     </Form.Group>
                                     
-                                    <Form.Group className="mb-3" controlId="formGridAddress1">
-                                        <Form.Label>Street Address</Form.Label>
+                                    <Form.Group className="mb-4" controlId="formBasicOwnerName">
+                                        <Form.Label className="display-6" style={{fontSize: "1.3rem"}}>About</Form.Label>
+                                        <Form.Control onChange={this.aboutChangeHandler} type="text" defaultValue={this.state.about} />
+                                    </Form.Group>
+
+                                    <Form.Group className="mb-4" controlId="formGridAddress1">
+                                        <Form.Label className="display-6" style={{fontSize: "1.3rem"}}>Street Address</Form.Label>
                                         <Form.Control onChange={this.addressLine1ChangeHandler} defaultValue={this.state.line1} />
                                     </Form.Group>
 
-                                    <Form.Group className="mb-3" controlId="formGridAddress2">
+                                    <Form.Group className="mb-4" controlId="formGridAddress2">
                                         {/* <Form.Label>Street Address Line 2 (optional)</Form.Label> */}
                                         <Form.Control onChange={this.addressLine2ChangeHandler} defaultValue={this.state.line2} />
                                     </Form.Group>
 
-                                    <Row className="mb-3">
+                                    <Row className="mb-4">
                                         <Form.Group as={Col} controlId="formGridCity">
-                                        <Form.Label>City</Form.Label>
+                                        <Form.Label className="display-6" style={{fontSize: "1.3rem"}}>City</Form.Label>
                                         <Form.Control onChange={this.cityChangeHandler} defaultValue={this.state.city}/>
                                         </Form.Group>
 
                                         <Form.Group as={Col} controlId="formGridState">
-                                        <Form.Label>State</Form.Label>
+                                        <Form.Label className="display-6" style={{fontSize: "1.3rem"}}>State</Form.Label>
                                         <Form.Control onChange={this.stateChangeHandler} defaultValue={this.state.state_name}/>
                                         </Form.Group>
 
                                         <Form.Group as={Col} controlId="formGridZip">
-                                        <Form.Label>Zip</Form.Label>
+                                        <Form.Label className="display-6" style={{fontSize: "1.3rem"}}>Zip</Form.Label>
                                         <Form.Control onChange={this.zipChangeHandler} type="number" defaultValue={this.state.zipcode}/>
                                         </Form.Group>
                                     </Row>
 
-                                    <Form.Group className="mb-3" controlId="formBasicPhoneNumber">
-                                        <Form.Label>Phone Number</Form.Label>
+                                    <Form.Group className="mb-4" controlId="formBasicPhoneNumber">
+                                        <Form.Label className="display-6" style={{fontSize: "1.3rem"}}>Phone Number</Form.Label>
                                         <Form.Control onChange={this.phoneNumberChangeHandler} type="number" defaultValue={this.state.phone_number} />
                                     </Form.Group>
 
-                                    <Form.Group className="mb-3" controlId="formBasicFoodOptions">
-                                        <Form.Label>Food Options</Form.Label>
+                                    <Form.Group className="mb-4" controlId="formBasicFoodOptions">
+                                        <Form.Label className="display-6" style={{fontSize: "1.3rem"}}>Food Options</Form.Label>
                                         <div key="inline-checkbox" className="mb-3">
                                         <Form.Check
                                             onChange={this.vegetarianChangeHandler}
@@ -675,8 +707,8 @@ class RestaurantProfile extends Component{
                                         </div>
                                     </Form.Group>
 
-                                    <Form.Group className="mb-3" controlId="formBasicDeliveryOptions">
-                                        <Form.Label>Delivery Options</Form.Label>
+                                    <Form.Group className="mb-4" controlId="formBasicDeliveryOptions">
+                                        <Form.Label className="display-6" style={{fontSize: "1.3rem"}}>Delivery Options</Form.Label>
                                         <div key="inline-checkbox" className="mb-3">
                                         <Form.Check
                                             onChange={this.deliveryChangeHandler}
@@ -699,8 +731,18 @@ class RestaurantProfile extends Component{
                                         </div>
                                     </Form.Group>                
                                     
-                                    <Form.Group controlId="formCoverImage" className="mb-3">
-                                        <Form.Label>Update your cover image</Form.Label>
+                                    <Form.Group className="mb-4" controlId="formBasicPhoneNumber">
+                                        <Form.Label className="display-6" style={{fontSize: "1.3rem"}}>Opening Time</Form.Label>
+                                        <Form.Control onChange={this.openingTimeChangeHandler} type="text" defaultValue={this.state.opening_time} />
+                                    </Form.Group>
+
+                                    <Form.Group className="mb-4" controlId="formBasicPhoneNumber">
+                                        <Form.Label className="display-6" style={{fontSize: "1.3rem"}}>Closing Time</Form.Label>
+                                        <Form.Control onChange={this.closingTimeChangeHandler} type="text" defaultValue={this.state.closing_time} />
+                                    </Form.Group>
+
+                                    <Form.Group controlId="formCoverImage" className="mb-4">
+                                        <Form.Label className="display-6" style={{fontSize: "1.3rem"}}>Update your cover image</Form.Label>
                                         <Form.Control onChange={this.coverImageChangeHandler} type="file" />
                                     </Form.Group>
 
@@ -712,7 +754,7 @@ class RestaurantProfile extends Component{
                                 </Form>
                             </Container>
                         </Tab>
-                        <Tab eventKey="second" title="Menu">
+                        <Tab eventKey="second" title={<span className="display-6 text-dark" style={{fontSize: "1.75rem"}}>Menu</span>}>
                             <Container className="my-5">
                             </Container>
                             <Row className="my-5">
@@ -783,14 +825,14 @@ class RestaurantProfile extends Component{
                                 </Col>
                             </Row>
                         </Tab>
-                        <Tab eventKey="third" title="Orders">
+                        <Tab eventKey="third" title={<span className="display-6 text-dark" style={{fontSize: "1.75rem"}}>Orders</span>}>
                             <Container className="my-5">
                                 <Row className="my-4">
                                     <Form.Select onChange={this.selectedOrderFilterChangeHandler}>
                                         <option value="all">All orders</option>
                                         <option value="placed">New orders</option>
                                         <option value="delivered">Delivered orders</option>
-                                        <option value="cancelled">Cancelled orders</option>
+                                        <option value="cancelled">Preparing orders</option>
                                     </Form.Select>
                                 </Row>
                                 <Row>

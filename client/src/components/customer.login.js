@@ -7,6 +7,12 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Container from 'react-bootstrap/Container';
 import Image from 'react-bootstrap/Image';
+import Navbar from './navbar';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import { Link } from 'react-router-dom';
+import server_IP from '../config/server.config.js';
+
 
 // Define a Login Component
 class CustomerLogin extends Component{
@@ -57,7 +63,7 @@ class CustomerLogin extends Component{
         //set the with credentials to true
         axios.defaults.withCredentials = true;
         //make a post request with the user data
-        axios.post('http://localhost:3001/customer',data)
+        axios.post(`http://${server_IP}:3001/customer`,data)
             .then(response => {
                 console.log("Status Code : ",response.status);
                 if(response.status === 200){
@@ -77,17 +83,16 @@ class CustomerLogin extends Component{
         console.log('RENDERING')
         let redirectVar = null;
         if(cookie.load('customer')){
-            redirectVar = <Redirect to= "/customerProfile"/>
-        } else {
-            redirectVar = <Redirect to="/customerLogin"/>
+            redirectVar = <Redirect to= "/dashboard"/>
         }
         return(
-            <div>
+            <Container fluid style={{backgroundImage: `url('https://duyt4h9nfnj50.cloudfront.net/resized/6f8da0629bd54c4e66753e616a92ab22-w2880-14.jpg')`, height:"100vh", backgroundPosition: "center", backgroundRepeat: "no-repeat", backgroundSize: "cover"}}>
                     {redirectVar}
-                <Container className="mx-auto p-5">
+                    <Navbar/>
+                {/* <Container className="mx-auto p-5">
                     <Image src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Uber_Eats_2020_logo.svg/1280px-Uber_Eats_2020_logo.svg.png" fluid/>                    
-                </Container>
-                <Container className="mt-5">
+                </Container> */}
+                <Container className="mt-5 bg-light p-5 rounded">
                     <Form>
                         
                         <Form.Group className="mb-3" controlId="formBasicEmail">
@@ -105,9 +110,15 @@ class CustomerLogin extends Component{
                                 Login to your account
                             </Button>
                         </div>
+
+                        <div className="d-flex flex-row mt-3">
+                            <div className="">New to Uber Eats?</div>
+                            <div className="mx-2"><Link to="/customerRegister" style={{textDecoration: 'none'}}>
+                            <p style={{color: "#21b53f"}}>Create an account</p></Link></div>
+                        </div>
                     </Form>
                 </Container>
-            </div>
+            </Container>
         )
     }
 }

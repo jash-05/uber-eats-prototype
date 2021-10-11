@@ -541,10 +541,10 @@ class RestaurantProfile extends Component{
                     <Card style={{width: "50rem"}}>
                     <Card.Header>
                         <Row className="p-1">
-                        <Col xs={8}>
+                        <Col xs={7}>
                             Status: <strong>{capitalizeFirstLetter(((row.order_status==="placed") ? "New Order" : (row.order_status==="cancelled" ? "Preparing" : row.order_status)))}</strong>
                         </Col>
-                        <Col xs={2}>
+                        <Col xs={3}>
                             Order # {row.order_ID}
                         </Col>
                         <Col xs={2}>

@@ -33,7 +33,15 @@ exports.create = (req, res) => {
             message:
             err.message || "Some error occured while creating the restaurant"
         });
-        else res.send(data);
+        else {
+            console.log(data)
+            req.session.user = {
+                user_type: "restaurant",
+                id: data.restaurant_ID
+            }
+            res.cookie('restaurant',data.restaurant_ID,{maxAge: 9000000, httpOnly: false, path : '/'});
+            res.send(data)
+        }
     });
 };
 

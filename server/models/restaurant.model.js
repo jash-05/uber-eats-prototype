@@ -27,7 +27,7 @@ Restaurant.create = (newRestaurant, result) => {
         }
 
         console.log("created restaurant: ", { restaurant_id: res.insertId, ...newRestaurant});
-        result(null, { restaurant_id: res.insertId, ...newRestaurant });
+        result(null, { restaurant_ID: res.insertId, ...newRestaurant });
     });
 };
 

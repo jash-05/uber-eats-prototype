@@ -407,10 +407,10 @@ class RestaurantDetails extends Component{
                             </Button>
                         </Col>
                     </Row>
-                    <Row className="lead mx-5">
+                    <Row className="lead mx-5 px-3">
                         {`${this.state.about}`}
                     </Row>
-                    <Row className="my-2 lead mx-5">
+                    <Row className="my-2 lead mx-5 px-3">
                         {`${this.state.full_address}`}
                     </Row>
                 </Container>                

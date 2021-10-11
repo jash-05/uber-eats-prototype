@@ -12,7 +12,7 @@ import Modal from 'react-bootstrap/Modal';
 import { Link } from 'react-router-dom';
 import FloatingLabel from 'react-bootstrap/esm/FloatingLabel';
 import server_IP from '../config/server.config.js';
-
+import {withRouter} from 'react-router-dom';
 
 // Define a Login Component
 class CheckoutOrder extends Component{
@@ -60,11 +60,16 @@ class CheckoutOrder extends Component{
                 console.log(response.data);
                 let selected_dishes = [];
                 let total_order_amount = 0.0;
-                for (let i=0; i<response.data.dishes.length;i++){
-                    if (response.data.dishes[i].quantity > 0){
-                        selected_dishes.push(response.data.dishes[i])
-                        total_order_amount += (response.data.dishes[i].quantity 
-                            * response.data.dishes[i].price)
+                const res = await axios.get(`http://${server_IP}:3001/getOrderItems`, {
+                    params: {
+                        order_ID: response.data.order_ID
+                    }
+                })
+                for (let i=0; i<res.data.dishes.length;i++){
+                    if (res.data.dishes[i].quantity > 0){
+                        selected_dishes.push(res.data.dishes[i])
+                        total_order_amount += (res.data.dishes[i].quantity 
+                            * res.data.dishes[i].price)
                     }
                 }
                 let order_info = response.data;
@@ -159,6 +164,7 @@ class CheckoutOrder extends Component{
             if (response.status === 200){
                 console.log("Successful request");
                 console.log(response.data)
+                this.props.history.push('/dashboard')
             } else {
                 console.log("Unsuccessful request");
                 console.log(response);
@@ -284,4 +290,4 @@ class CheckoutOrder extends Component{
 
 
 //export Login Component
-export default CheckoutOrder;
+export default withRouter(CheckoutOrder);

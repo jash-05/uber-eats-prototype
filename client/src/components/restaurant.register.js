@@ -217,7 +217,7 @@ class RestaurantRegister extends Component{
                     console.log(response);
                     console.log('Cookie status: ', cookie.load('cookie'));
                     const address_data = {
-                        restaurant_ID: response.data.restaurant_id,
+                        restaurant_ID: response.data.restaurant_ID,
                         address_line_1: this.state.address_line_1,
                         address_line_2: this.state.address_line_2,
                         city: this.state.city,
@@ -230,6 +230,7 @@ class RestaurantRegister extends Component{
                         if (resp.status === 200) {
                             console.log("Successful request for storing restaurant address");
                             console.log(resp);
+                            window.location.reload(false);
                         } else {
                             console.log("Unsuccessful request for storing restaurant address");
                             console.log(resp)
@@ -245,7 +246,7 @@ class RestaurantRegister extends Component{
         console.log('RENDERING')
         let redirectVar = null;
         if(cookie.load('restaurant')){
-            redirectVar = <Redirect to= "/welcomeUser"/>
+            redirectVar = <Redirect to= "/restaurantProfile"/>
         }
         return(
             <Container fluid style={{backgroundImage: `url('https://images.unsplash.com/photo-1614946569026-d3044c2983e3?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1374&q=80')`, height:"100vh", backgroundPosition: "center", backgroundRepeat: "no-repeat", backgroundSize: "cover"}}>

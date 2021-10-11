@@ -275,7 +275,7 @@ class Dashboard extends Component{
         let vegan_btn_variant = this.state.vegan ? "dark" : "light";
 
         return(
-            <Container fluid>
+            <Container fluid style={{backgroundImage: `url('https://images.unsplash.com/photo-1520074881623-f6cc435eb449?ixlib=rb-1.2.1')`, height:"100vh", backgroundPosition: "center", backgroundRepeat: "no-repeat", backgroundSize: "cover"}}>
                 <Navbar/>
                 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous"></link>
                 <Row className="m-4">

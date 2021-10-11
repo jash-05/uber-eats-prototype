@@ -163,7 +163,7 @@ class RestaurantProfile extends Component{
                 console.log(response.data);
                 for (let i=0;i < response.data.length; i++){
                     let main_ingredients = response.data[i].main_ingredients;
-                    if (main_ingredients.length > 20) {
+                    if ((main_ingredients) && (main_ingredients.length > 20)) {
                         main_ingredients = main_ingredients.slice(0,80).concat('...')
                     }
                     dishesData.push({

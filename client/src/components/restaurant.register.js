@@ -42,7 +42,10 @@ class RestaurantRegister extends Component{
             delivery: true,
             pickup: false,
             uploaded_image: "",
-            cover_image: ""
+            cover_image: "",
+            opening_time: "",
+            closing_time: "",
+            about: ""
         }
         // //Bind the handlers to this class
         this.restaurantNameChangeHandler = this.restaurantNameChangeHandler.bind(this);
@@ -79,6 +82,11 @@ class RestaurantRegister extends Component{
     ownerNameChangeHandler = (e) => {
         this.setState({
             owner_name: e.target.value
+        })
+    }
+    aboutChangeHandler = (e) => {
+        this.setState({
+            about: e.target.value
         })
     }
     emailChangeHandler = (e) => {
@@ -164,7 +172,16 @@ class RestaurantRegister extends Component{
             console.log(err);
         })
     }
-
+    openingTimeChangeHandler = e => {
+        this.setState({
+            opening_time: e.target.value
+        })
+    }
+    closingTimeChangeHandler = e => {
+        this.setState({
+            closing_time: e.target.value
+        })
+    }
     //submit Login handler to send a request to the node backend
     submitLogin = (e) => {
         console.log(`Restaurant name: ${this.state.restaurant_name}, Owner name: ${this.state.owner_name}, Email: ${this.state.email}, Password: ${this.state.password}, Country: ${this.state.country}, Phone number: ${this.state.phone_number}`);
@@ -183,7 +200,10 @@ class RestaurantRegister extends Component{
             vegan: this.state.vegan,
             delivery: this.state.delivery,
             pickup: this.state.pickup,
-            cover_image: this.state.cover_image
+            cover_image: this.state.cover_image,
+            opening_time: this.state.opening_time,
+            closing_time: this.state.closing_time,
+            about: this.state.about
         }
         console.log(restaurant_data)
         //set the with credentials to true
@@ -244,6 +264,11 @@ class RestaurantRegister extends Component{
                         <Form.Group className="mb-3" controlId="formBasicOwnerName">
                             <Form.Label>Owner name</Form.Label>
                             <Form.Control onChange={this.ownerNameChangeHandler} type="text" placeholder="Enter your full name" />
+                        </Form.Group>
+
+                        <Form.Group className="mb-3" controlId="formBasicOwnerName">
+                            <Form.Label>About</Form.Label>
+                            <Form.Control onChange={this.aboutChangeHandler} type="text" placeholder="Enter a description for your restaurant" />
                         </Form.Group>
                         
                         <Form.Group className="mb-3" controlId="formBasicEmail">
@@ -349,6 +374,18 @@ class RestaurantRegister extends Component{
                             </div>
                         </Form.Group>                
                         
+                        <Row className="mb-3">
+                            <Form.Group as={Col} controlId="formGridCity">
+                            <Form.Label>Opening Time</Form.Label>
+                            <Form.Control onChange={this.openingTimeChangeHandler} placeholder="Eg: 10:00 AM" />
+                            </Form.Group>
+
+                            <Form.Group as={Col} controlId="formGridState">
+                            <Form.Label>Closing Time</Form.Label>
+                            <Form.Control onChange={this.closingTimeChangeHandler} placeholder="Eg: 09:30 PM"/>
+                            </Form.Group>
+                        </Row>
+
                         <Form.Group controlId="formCoverImage" className="mb-3">
                             <Form.Label>Upload your cover image</Form.Label>
                             <Form.Control onChange={this.coverImageChangeHandler} type="file" />
@@ -361,7 +398,7 @@ class RestaurantRegister extends Component{
                         </div>
                         <div className="d-flex flex-row mt-3">
                             <div className="">Already use Uber Eats?</div>
-                            <div className="mx-2"><Link to="/customerLogin" style={{textDecoration: 'none'}}>
+                            <div className="mx-2"><Link to="/restaurantLogin" style={{textDecoration: 'none'}}>
                             <p style={{color: "#21b53f"}}>Sign in</p></Link></div>
                         </div>
                     </Form>
